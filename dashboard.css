@@ -41,3 +41,7 @@ table, th, td, tr {
 th, td {
     padding: 0.5em;
 }
+
+.P1.critical, .P1.blocker {
+    color: red;
+}

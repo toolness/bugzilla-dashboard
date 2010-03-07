@@ -2,16 +2,21 @@ $(window).ready(
   function() {
     function showBugs(query, bugs) {
       var table = $("#templates .bugs").clone();
-      var row = table.find(".bug-row").remove();
+      var rowTemplate = table.find(".bug-row").remove();
       bugs.reverse();
       bugs.forEach(
         function(bug) {
+          var row = rowTemplate.clone();
           row.find(".summary").text(bug.summary);
           row.find(".summary").attr("href", 
                                     Bugzilla.getShowBugURL(bug.id));
-          row.find(".priority").text(bug.priority);
+          if (bug.priority != "--")
+            row.find(".importance").text(bug.priority + NBSP +
+                                         bug.severity)
+                                   .addClass(bug.priority)
+                                   .addClass(bug.severity);
           row.find(".last-changed").text(prettyDate(bug.last_change_time));
-          table.append(row.clone());
+          table.append(row);
         });
       query.append(table);
     }
@@ -33,6 +38,7 @@ $(window).ready(
       return then.toLocaleFormat("%Y-%m-%d");
     }
 
+    const NBSP = "\u00a0";
     const MS_PER_HOUR = 1000 * 60 * 60;
     const MS_PER_DAY =  MS_PER_HOUR * 24;
     const MS_PER_WEEK = MS_PER_DAY * 7;
