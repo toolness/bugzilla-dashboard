@@ -13,7 +13,7 @@ a:hover {
     background: yellow;
 }
 
-#fixed-bugs a {
+#fixed-bugs .bug-row {
     text-decoration: line-through;
 }
 

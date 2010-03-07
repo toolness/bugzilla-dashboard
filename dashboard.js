@@ -34,10 +34,22 @@ $(window).ready(
                       });
     }
 
+    // Taken from MDC @ Core_JavaScript_1.5_Reference/Objects/Date.
+    function ISODateString(d) {
+      function pad(n) { return n < 10 ? '0' + n : n; }
+
+      return (d.getUTCFullYear() + '-' +
+              pad(d.getUTCMonth() + 1) + '-' +
+              pad(d.getUTCDate()) + 'T' + 
+              pad(d.getUTCHours()) + ':' +
+              pad(d.getUTCMinutes()) + ':' +
+              pad(d.getUTCSeconds()) + 'Z');
+    }
+
     function timeAgo(ms) {
       var now = new Date();
       var then = new Date(now - ms);
-      return then.toLocaleFormat("%Y-%m-%d");
+      return ISODateString(then);
     }
 
     const NBSP = "\u00a0";
