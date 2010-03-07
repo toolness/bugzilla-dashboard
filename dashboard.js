@@ -10,6 +10,7 @@ $(window).ready(
           row.find(".summary").attr("href", 
                                     Bugzilla.getShowBugURL(bug.id));
           row.find(".priority").text(bug.priority);
+          row.find(".last-changed").text(prettyDate(bug.last_change_time));
           table.append(row.clone());
         });
       query.append(table);
