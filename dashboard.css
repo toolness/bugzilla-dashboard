@@ -42,6 +42,14 @@ th {
     text-align: left;
 }
 
+tr.bug-row {
+    cursor: pointer;
+}
+
+tr.bug-row:hover {
+    background: #f0f0f0;
+}
+
 th, td {
     padding: 0.5em;
 }

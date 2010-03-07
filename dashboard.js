@@ -8,14 +8,16 @@ $(window).ready(
         function(bug) {
           var row = rowTemplate.clone();
           row.find(".summary").text(bug.summary);
-          row.find(".summary").attr("href", 
-                                    Bugzilla.getShowBugURL(bug.id));
           if (bug.priority != "--")
             row.find(".importance").text(bug.priority + NBSP +
                                          bug.severity)
                                    .addClass(bug.priority)
                                    .addClass(bug.severity);
           row.find(".last-changed").text(prettyDate(bug.last_change_time));
+          row.click(
+            function() {
+              window.open(Bugzilla.getShowBugURL(bug.id));
+            });
           table.append(row);
         });
       query.append(table);
