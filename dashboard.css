@@ -1,0 +1,43 @@
+body {
+    font-family: Helvetica Neue, Arial, sans-serif;
+    font-size: 9pt;
+    background: white;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    background: yellow;
+}
+
+#fixed-bugs a {
+    text-decoration: line-through;
+}
+
+#templates {
+    display: none;
+}
+
+/* Rule to fix quirks-mode inheritance behavior */
+table, caption {
+  font-size: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+}
+
+table {
+    width: 40em;
+    border-collapse: collapse;
+}
+
+table, th, td, tr {
+    border: 1px black dotted;
+}
+
+th, td {
+    padding: 0.5em;
+}
