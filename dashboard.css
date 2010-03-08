@@ -17,6 +17,23 @@ a:hover {
     display: none;
 }
 
+#reports .container {
+    display: table;
+}
+
+#reports .container > div:first-child {
+    padding: 0;
+}
+
+#reports .container > div {
+    display: table-cell;
+    padding: 0 0.5em;
+}
+
+#reports .container h2 {
+    margin-top: 0;
+}
+
 #templates {
     display: none;
 }
@@ -30,7 +47,7 @@ table, caption {
 }
 
 table {
-    width: 40em;
+    width: 30em;
     border-collapse: collapse;
 }
 

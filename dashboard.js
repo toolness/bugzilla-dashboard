@@ -33,8 +33,6 @@ $(window).ready(
           row.find(".summary").text(bug.summary);
           row.addClass("status-" + bug.status);
           if (bug.priority != "--") {
-            row.find(".importance").text(bug.priority + NBSP +
-                                         bug.severity);
             row.addClass(bug.priority);
             row.addClass(bug.severity);
           }
@@ -95,7 +93,6 @@ $(window).ready(
       return ISODateString(then);
     }
 
-    const NBSP = "\u00a0";
     const MS_PER_HOUR = 1000 * 60 * 60;
     const MS_PER_DAY =  MS_PER_HOUR * 24;
     const MS_PER_WEEK = MS_PER_DAY * 7;
