@@ -1,5 +1,7 @@
 $(window).ready(
   function() {
+    var reportsLeft = 0;
+
     function sortByLastChanged(bugs) {
       bugs.forEach(
         function(bug) {
@@ -27,6 +29,7 @@ $(window).ready(
       bugs.forEach(
         function(bug) {
           var row = rowTemplate.clone();
+          row.attr("id", "bug-id-" + bug.id);
           row.find(".summary").text(bug.summary);
           if (bug.priority != "--")
             row.find(".importance").text(bug.priority + NBSP +
@@ -43,15 +46,33 @@ $(window).ready(
       query.append(table);
     }
 
+    function finalizeReports() {
+      var visited = {};
+      $("#reports .bug-row").each(
+        function() {
+          var id = $(this).attr("id");
+          if (id in visited)
+            $(this).remove();
+          else
+            visited[id] = true;
+        });
+      $("#loading-screen").hide();
+      $("#reports").fadeIn();
+    }
+
     function report(selector, searchTerms) {
       var newTerms = {__proto__: defaults};
       for (name in searchTerms)
         newTerms[name.replace(/_DOT_/g, ".")] = searchTerms[name];
       Bugzilla.search(newTerms,
                       function(response) {
-                        showBugs($(selector),
-                                 response.bugs);
+                        showBugs($(selector), response.bugs);
+                        reportsLeft--;
+                        $("#loading-screen .countdown").text(reportsLeft);
+                        if (!reportsLeft)
+                          finalizeReports();
                       });
+      reportsLeft++;
     }
 
     // Taken from MDC @ Core_JavaScript_1.5_Reference/Objects/Date.
@@ -118,4 +139,6 @@ $(window).ready(
             email2_type: "not_equals",
             email2_assigned_to: 1,
             email2_reporter: 1});
+
+    $("#loading-screen .countdown").text(reportsLeft);
   });

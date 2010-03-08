@@ -17,6 +17,10 @@ a:hover {
     text-decoration: line-through;
 }
 
+#reports {
+    display: none;
+}
+
 #templates {
     display: none;
 }
@@ -56,4 +60,8 @@ th, td {
 
 .P1.critical, .P1.blocker {
     color: red;
+}
+
+.countdown {
+    color: #f0f0f0;
 }
