@@ -3,17 +3,22 @@ $(window).ready(
     var reportsLeft = 0;
 
     function sortByLastChanged(bugs) {
+      var lctimes = {};
+
       bugs.forEach(
         function(bug) {
           var parseableTime = bug.last_change_time.replace(/-/g,"/");
           parseableTime = parseableTime.replace(/[TZ]/g," ");
-          bug._lctime = new Date(parseableTime);
+          lctimes[bug.id] = new Date(parseableTime);
         });
 
       function compare(a, b) {
-        if (a._lctime < b._lctime)
+        var alc = lctimes[a.id];
+        var blc = lctimes[b.id];
+
+        if (alc < blc)
           return -1;
-        if (a._lctime > b._lctime)
+        if (alc > blc)
           return 1;
         return 0;
       }
