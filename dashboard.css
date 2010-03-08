@@ -13,10 +13,6 @@ a:hover {
     background: yellow;
 }
 
-#fixed-bugs .bug-row {
-    text-decoration: line-through;
-}
-
 #reports {
     display: none;
 }
@@ -60,6 +56,10 @@ th, td {
 
 .P1.critical, .P1.blocker {
     color: red;
+}
+
+.status-RESOLVED, .status-VERIFIED {
+    text-decoration: line-through;
 }
 
 .countdown {
