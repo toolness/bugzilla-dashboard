@@ -42,10 +42,23 @@ $(window).ready(
             row.addClass(bug.severity);
           }
           row.find(".last-changed").text(prettyDate(bug.last_change_time));
+
           row.click(
-            function() {
+            function onClick() {
               window.open(Bugzilla.getShowBugURL(bug.id));
             });
+
+          row.hover(
+            function onIn() {
+              var tooltip = $("#templates .bug-tooltip").clone();
+              tooltip.find(".priority").text(bug.priority);
+              // TODO: Show more information in tooltip.
+              $(this).append(tooltip);
+            },
+            function onOut() {
+              $(this).find(".bug-tooltip").remove();
+            });
+
           table.append(row);
         });
       query.append(table);
