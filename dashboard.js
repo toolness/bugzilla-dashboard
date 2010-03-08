@@ -1,8 +1,28 @@
 $(window).ready(
   function() {
+    function sortByLastChanged(bugs) {
+      bugs.forEach(
+        function(bug) {
+          var parseableTime = bug.last_change_time.replace(/-/g,"/");
+          parseableTime = parseableTime.replace(/[TZ]/g," ");
+          bug._lctime = new Date(parseableTime);
+        });
+
+      function compare(a, b) {
+        if (a._lctime < b._lctime)
+          return -1;
+        if (a._lctime > b._lctime)
+          return 1;
+        return 0;
+      }
+
+      bugs.sort(compare);
+    }
+
     function showBugs(query, bugs) {
       var table = $("#templates .bugs").clone();
       var rowTemplate = table.find(".bug-row").remove();
+      sortByLastChanged(bugs);
       bugs.reverse();
       bugs.forEach(
         function(bug) {
@@ -72,9 +92,30 @@ $(window).ready(
             changed_after: timeAgo(MS_PER_WEEK),
             email1: "avarma@mozilla.com",
             email1_type: "equals",
-            email1_assigned_to: 1});
+            email1_assigned_to: 1,
+            email1_reporter: 1,
+            email1_cc: 1});
 
     report("#code-reviews",
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             flag_DOT_requestee: "avarma@mozilla.com"});
+
+    report("#reported-bugs",
+           {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+            email1: "avarma@mozilla.com",
+            email1_type: "equals",
+            email1_reporter: 1,
+            email2: "avarma@mozilla.com",
+            email2_type: "not_equals",
+            email2_assigned_to: 1});
+
+    report("#cc-bugs",
+           {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+            email1: "avarma@mozilla.com",
+            email1_type: "equals",
+            email1_cc: 1,
+            email2: "avarma@mozilla.com",
+            email2_type: "not_equals",
+            email2_assigned_to: 1,
+            email2_reporter: 1});
   });
