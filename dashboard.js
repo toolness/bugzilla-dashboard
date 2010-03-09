@@ -59,6 +59,8 @@ $(window).ready(
           table.append(row);
         });
       query.append(table);
+      table.hide();
+      table.fadeIn();
     }
 
     // Remove duplicate bugs, preferring the first listing of a bug in
