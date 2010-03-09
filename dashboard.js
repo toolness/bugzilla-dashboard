@@ -1,7 +1,5 @@
 $(window).ready(
   function() {
-    var reportsLeft = 0;
-
     function sortByLastChanged(bugs) {
       var lctimes = {};
 
@@ -64,7 +62,11 @@ $(window).ready(
       query.append(table);
     }
 
-    function finalizeReports() {
+    // Remove duplicate bugs, preferring the first listing of a bug in
+    // the DOM to later ones. This is b/c the reports further down the
+    // page are the less "interesting" ones, and we want to capture
+    // the most "interesting" part of each bug.
+    function removeDuplicateBugs() {
       var visited = {};
       $("#reports .bug-row").each(
         function() {
@@ -74,8 +76,6 @@ $(window).ready(
           else
             visited[id] = true;
         });
-      $("#loading-screen").hide();
-      $("#reports").fadeIn();
     }
 
     function report(selector, searchTerms) {
@@ -85,12 +85,8 @@ $(window).ready(
       Bugzilla.search(newTerms,
                       function(response) {
                         showBugs($(selector), response.bugs);
-                        reportsLeft--;
-                        $("#loading-screen .countdown").text(reportsLeft);
-                        if (!reportsLeft)
-                          finalizeReports();
+                        removeDuplicateBugs();
                       });
-      reportsLeft++;
     }
 
     // Taken from MDC @ Core_JavaScript_1.5_Reference/Objects/Date.
@@ -156,6 +152,4 @@ $(window).ready(
             email2_type: "not_equals",
             email2_assigned_to: 1,
             email2_reporter: 1});
-
-    $("#loading-screen .countdown").text(reportsLeft);
   });

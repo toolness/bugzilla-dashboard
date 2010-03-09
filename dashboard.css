@@ -13,10 +13,6 @@ a:hover {
     background: yellow;
 }
 
-#reports {
-    display: none;
-}
-
 #reports .container {
     display: table;
 }
@@ -32,6 +28,7 @@ a:hover {
 
 #reports .container h2 {
     margin-top: 0;
+    width: 20em;
 }
 
 #templates {
@@ -47,7 +44,7 @@ table, caption {
 }
 
 table {
-    width: 30em;
+    width: 100%;
     border-collapse: collapse;
 }
 
