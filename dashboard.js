@@ -5,9 +5,7 @@ $(window).ready(
 
       bugs.forEach(
         function(bug) {
-          var parseableTime = bug.last_change_time.replace(/-/g,"/");
-          parseableTime = parseableTime.replace(/[TZ]/g," ");
-          lctimes[bug.id] = new Date(parseableTime);
+          lctimes[bug.id] = dateFromISO8601(bug.last_change_time);
         });
 
       function compare(a, b) {
@@ -39,6 +37,7 @@ $(window).ready(
             row.addClass(bug.priority);
             row.addClass(bug.severity);
           }
+          console.log(bug.last_change_time, bug.summary);
           row.find(".last-changed").text(prettyDate(bug.last_change_time));
 
           row.click(
@@ -89,22 +88,10 @@ $(window).ready(
                       });
     }
 
-    // Taken from MDC @ Core_JavaScript_1.5_Reference/Objects/Date.
-    function ISODateString(d) {
-      function pad(n) { return n < 10 ? '0' + n : n; }
-
-      return (d.getUTCFullYear() + '-' +
-              pad(d.getUTCMonth() + 1) + '-' +
-              pad(d.getUTCDate()) + 'T' + 
-              pad(d.getUTCHours()) + ':' +
-              pad(d.getUTCMinutes()) + ':' +
-              pad(d.getUTCSeconds()) + 'Z');
-    }
-
     function timeAgo(ms) {
       var now = new Date();
       var then = new Date(now - ms);
-      return ISODateString(then);
+      return dateToISO8601(then);
     }
 
     const MS_PER_HOUR = 1000 * 60 * 60;
