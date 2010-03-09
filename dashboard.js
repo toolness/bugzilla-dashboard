@@ -1,5 +1,26 @@
 $(window).ready(
   function() {
+    // Really simple JSON cache that uses a form field as
+    // a back-end.
+    function buildCache(selector) {
+      var data = {};
+      var json = $(selector).val();
+      if (json.length)
+        data = JSON.parse(json);
+
+      return {
+        set: function set(key, value) {
+          data[key] = value;
+          $(selector).val(JSON.stringify(data));
+        },
+        get: function get(key) {
+          return data[key];
+        }
+      };
+    }
+
+    var cache = buildCache("#form-cache .data");
+
     function sortByLastChanged(bugs) {
       var lctimes = {};
 
@@ -37,7 +58,6 @@ $(window).ready(
             row.addClass(bug.priority);
             row.addClass(bug.severity);
           }
-          console.log(bug.last_change_time, bug.summary);
           row.find(".last-changed").text(prettyDate(bug.last_change_time));
 
           row.click(
@@ -58,8 +78,10 @@ $(window).ready(
 
           table.append(row);
         });
+      query.find(".bugs").remove();
       query.append(table);
       table.hide();
+      removeDuplicateBugs();
       table.fadeIn();
     }
 
@@ -83,10 +105,15 @@ $(window).ready(
       var newTerms = {__proto__: defaults};
       for (name in searchTerms)
         newTerms[name.replace(/_DOT_/g, ".")] = searchTerms[name];
+
+      var cached = cache.get(selector);
+      if (cached)
+        showBugs($(selector), cached);
+
       Bugzilla.search(newTerms,
                       function(response) {
+                        cache.set(selector, response.bugs);
                         showBugs($(selector), response.bugs);
-                        removeDuplicateBugs();
                       });
     }
 

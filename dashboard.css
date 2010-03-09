@@ -31,7 +31,7 @@ a:hover {
     width: 20em;
 }
 
-#templates {
+#templates, #form-cache {
     display: none;
 }
 
