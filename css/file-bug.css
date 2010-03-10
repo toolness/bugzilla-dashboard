@@ -20,3 +20,7 @@ input, textarea {
     font-family: Helvetica Neue, Arial, sans-serif;
     font-size: 9pt;
 }
+
+.ui-autocomplete-loading {
+    background-image: url('images/ajax-loader.gif');
+}

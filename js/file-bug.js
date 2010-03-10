@@ -15,6 +15,7 @@ $(window).ready(
     }
 
     var categoryOptions = {
+      minLength: 2,
       source: function(request, response) {
         function respond() {
           queuedRespond = null;
