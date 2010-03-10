@@ -54,6 +54,7 @@ $(window).ready(
       });
 
     Bugzilla.ajax({url: "/configuration",
+                   data: {flags: 0},
                    success: function(result) {
                      config = result;
                      cache.set("configuration", result);
