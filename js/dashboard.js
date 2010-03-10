@@ -91,10 +91,13 @@ $(window).ready(
       if (cached)
         showBugs($(selector), cached);
 
+      $(selector).find("h2").addClass("loading");
+
       Bugzilla.search(newTerms,
                       function(response) {
                         cache.set(selector, response.bugs);
                         showBugs($(selector), response.bugs);
+                        $(selector).find("h2").removeClass("loading");
                       });
     }
 

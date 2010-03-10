@@ -84,3 +84,9 @@ th, td {
     /* TODO: Actually display this. */
     display: none;
 }
+
+.loading {
+    background-image: url('images/ajax-loader.gif');
+    background-repeat: no-repeat;
+    background-position: top right;
+}
