@@ -49,8 +49,8 @@ $(window).ready(
         event.preventDefault();
         var parts = $("input#category").val().split(EM_DASH);
         window.open(Bugzilla.BASE_UI_URL + "/enter_bug.cgi?" +
-                    "product=" + encodeURI(parts[0]) + "&" +
-                    "component=" + encodeURI(parts[1]));
+                    "product=" + escape(parts[0]) + "&" +
+                    "component=" + escape(parts[1]));
       });
 
     Bugzilla.ajax({url: "/configuration",
