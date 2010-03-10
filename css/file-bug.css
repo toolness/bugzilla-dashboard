@@ -6,9 +6,17 @@ tr {
     border: none;
 }
 
+td {
+    padding-left: 0;
+}
+
+form {
+    width: 40em;
+}
+
 input, textarea {
     border: 1px solid black;
-    width: 20em;
+    width: 100%;
     font-family: Helvetica Neue, Arial, sans-serif;
     font-size: 9pt;
 }
