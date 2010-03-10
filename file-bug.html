@@ -1,0 +1,35 @@
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" media="all"
+        href="dashboard.css" />
+  <link rel="stylesheet" type="text/css" media="all"
+        href="file-bug.css" />
+  <link rel="stylesheet" type="text/css" media="all"
+        href="jquery-ui.css" />
+  <title>Atul's Bug-Filer</title>
+</head>
+<body>
+<div id="reports">
+  <h1>Atul's Bug-Filer</h1>
+  <form id="file-bug">
+  <div id="report">
+    <table>
+      <tr>
+        <td>Category</td>
+        <td><input type="text" id="category"/></td>
+      </tr>
+    </table>
+  </div>
+  </form>
+</div>
+<div id="form-cache">
+  <form><textarea class="data"></textarea></form>
+</div>
+</body>
+<script src="jquery.js"></script>
+<script src="jquery-ui.js"></script>
+<script src="bugzilla.js"></script>
+<script src="cache.js"></script>
+<script src="file-bug.js"></script>
+</html>
