@@ -9,7 +9,8 @@ $(window).ready(
           var suggs = [];
           result.users.forEach(
             function(user) {
-              suggs.push(user.real_name + " (" + user.name + ")");
+              suggs.push({label: user.real_name + " (" + user.name + ")",
+                          value: user.name});
             });
           response(suggs);
         }
@@ -21,4 +22,10 @@ $(window).ready(
       }
     };
     $("input#query").autocomplete(options);
+    console.log($("#find-user"));
+    $("#find-user").submit(
+      function(event) {
+        event.preventDefault();
+        window.open("index.html?username=" + escape($("input#query").val()));
+      });
   });
