@@ -6,6 +6,7 @@ $(window).ready(
       minLength: 2,
       source: function(request, response) {
         function success(result) {
+          currReq = null;
           var suggs = [];
           result.users.forEach(
             function(user) {
@@ -14,6 +15,8 @@ $(window).ready(
             });
           response(suggs);
         }
+        if (currReq)
+          currReq.abort();
         currReq = Bugzilla.ajax({url: "/user",
                                  data: {match: request.term,
                                         username: $("#username").val(),
