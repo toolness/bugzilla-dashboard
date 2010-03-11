@@ -24,6 +24,19 @@ $(window).ready(
       bugs.sort(compare);
     }
 
+    function updatePrettyDates(query) {
+      query.find(".last-changed").each(
+        function() {
+          var lcTime = $(this).attr("data-last-change");
+          $(this).text(prettyDate(lcTime));
+        });
+    }
+
+    const PRETTY_DATE_UPDATE_INTERVAL = 1000 * 60;
+
+    window.setInterval(function() { updatePrettyDates($("#reports")); },
+                       PRETTY_DATE_UPDATE_INTERVAL);
+
     function showBugs(query, bugs) {
       var table = $("#templates .bugs").clone();
       var rowTemplate = table.find(".bug-row").remove();
@@ -39,7 +52,8 @@ $(window).ready(
             row.addClass(bug.priority);
             row.addClass(bug.severity);
           }
-          row.find(".last-changed").text(prettyDate(bug.last_change_time));
+          row.find(".last-changed").attr("data-last-change",
+                                         bug.last_change_time);
 
           row.click(
             function onClick() {
@@ -59,6 +73,7 @@ $(window).ready(
 
           table.append(row);
         });
+      updatePrettyDates(table);
       query.find(".bugs").remove();
       query.append(table);
       table.hide();
