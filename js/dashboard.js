@@ -126,20 +126,30 @@ $(window).ready(
     const MS_PER_DAY =  MS_PER_HOUR * 24;
     const MS_PER_WEEK = MS_PER_DAY * 7;
 
+    var myUsername = "avarma@mozilla.com";
+
+    if (location.search) {
+      var match = location.search.match(/\?username=(.*)/);
+      if (match) {
+        myUsername = unescape(match[1]);
+        $("#who").text(myUsername);
+      }
+    }
+
     var defaults = {
       changed_after: timeAgo(MS_PER_WEEK * 14)
     };
 
     report("#assigned-bugs",
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            email1: "avarma@mozilla.com",
+            email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1});
 
     report("#fixed-bugs",
            {resolution: ["FIXED"],
             changed_after: timeAgo(MS_PER_WEEK),
-            email1: "avarma@mozilla.com",
+            email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1,
             email1_reporter: 1,
@@ -147,23 +157,23 @@ $(window).ready(
 
     report("#code-reviews",
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            flag_DOT_requestee: "avarma@mozilla.com"});
+            flag_DOT_requestee: myUsername});
 
     report("#reported-bugs",
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            email1: "avarma@mozilla.com",
+            email1: myUsername,
             email1_type: "equals",
             email1_reporter: 1,
-            email2: "avarma@mozilla.com",
+            email2: myUsername,
             email2_type: "not_equals",
             email2_assigned_to: 1});
 
     report("#cc-bugs",
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            email1: "avarma@mozilla.com",
+            email1: myUsername,
             email1_type: "equals",
             email1_cc: 1,
-            email2: "avarma@mozilla.com",
+            email2: myUsername,
             email2_type: "not_equals",
             email2_assigned_to: 1,
             email2_reporter: 1});
