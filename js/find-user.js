@@ -25,7 +25,6 @@ $(window).ready(
       }
     };
     $("input#query").autocomplete(options);
-    console.log($("#find-user"));
     $("#find-user").submit(
       function(event) {
         event.preventDefault();
