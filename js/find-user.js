@@ -4,6 +4,7 @@ $(window).ready(
 
     var options = {
       minLength: 2,
+      delay: 1000,
       source: function(request, response) {
         function success(result) {
           currReq = null;
