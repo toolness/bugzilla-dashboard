@@ -1,0 +1,42 @@
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+  <link rel="stylesheet" type="text/css" media="all"
+        href="css/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" media="all"
+        href="css/dashboard.css" />
+  <link rel="stylesheet" type="text/css" media="all"
+        href="css/file-bug.css" />
+  <title>Atul's User-Finder</title>
+</head>
+<body>
+<div id="reports">
+  <h1>Atul's Bugzilla Login Example</h1>
+  <div id="login">Click to login</div>
+  <iframe id="login-frame"
+          src="login.html" style="display: none;"></iframe>
+</div>
+</body>
+<script src="js/jquery.js"></script>
+<script src="js/post-office.js"></script>
+<script>
+PostOffice.exposedMethods = {
+  userChanged: function(arg, cb, event) {
+    console.log("USER CHANGED " + arg.user);
+  }
+};
+
+$(window).ready(function() {
+  var login = $("#login-frame").get(0).contentWindow;
+  $("#login").click(function() {
+    //window.open("login.html", "BugzillaLogin", "width=640,height=480");
+    PostOffice.send(
+      "getCurrentUser", null,
+      login,
+      function(response) {
+        console.log(response.user);
+    });
+  });
+});
+</script>
+</html>
