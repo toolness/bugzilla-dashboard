@@ -11,6 +11,7 @@ $(window).ready(
         $("#login").fadeOut();
         title = username + "'s " + BASE_TITLE;
 
+        $(".requires-no-login").hide();
         $(".requires-login").show();
         if (password) {
           $(".requires-auth-login").show();
@@ -19,6 +20,7 @@ $(window).ready(
         }
       } else {
         $("#login").fadeIn();
+        $(".requires-no-login").show();
         $(".requires-login").hide();
         $(".requires-auth-login").hide();
       }
@@ -43,5 +45,10 @@ $(window).ready(
         onLoginChange();
       });
 
+    $(".dialog").click(
+      function(event) {
+        if (event.target == this)
+          $(this).fadeOut();
+      });
     onLoginChange();
   });

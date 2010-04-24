@@ -69,6 +69,7 @@ a:hover {
 
 /* Rule to fix quirks-mode inheritance behavior */
 table, caption {
+  color: inherit;
   font-size: inherit;
   font-weight: inherit;
   font-style: inherit;
@@ -121,4 +122,18 @@ th, td {
     background-image: url('images/ajax-loader.gif');
     background-repeat: no-repeat;
     background-position: top right;
+}
+
+.dialog {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.dialog .content {
+    color: white;
+    background: rgba(0, 0, 0, 0.75);
+    padding: 2em;
+    width: 50%;
+    margin: 10em auto;
 }

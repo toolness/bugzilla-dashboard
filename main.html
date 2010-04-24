@@ -7,8 +7,9 @@
 </head>
 <body>
 <div id="header">
-  <h1 class="title"></h1>
+  <h1 class="title">Bugzilla Dashboard</h1>
   <ul class="menu">
+    <li title="login" class="requires-no-login">Log In</span>
     <li title="login" class="requires-login">Change User</span>
     <li title="find-user" class="requires-auth-login">Find A User</span>
     <li title="file-bug">File A Bug</span>
@@ -17,6 +18,7 @@
 <div id="reports">
 </div>
 <div id="login" class="dialog">
+  <div class="content">
   <form id="login-form">
   <p>Enter your Bugzilla login information below.</p>
   <p>Your browser sends these credentials directly to
@@ -35,6 +37,7 @@
   <br/>
   <input type="submit" id="login-submit" value="View Dashboard"/>
   </form>
+  </div>
 </div>
 </body>
 <!-- Base Scripts -->
