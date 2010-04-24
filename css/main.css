@@ -69,35 +69,35 @@ a:hover {
 
 /* Rule to fix quirks-mode inheritance behavior */
 table, caption {
-  color: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  font-style: inherit;
-  font-variant: inherit;
+    color: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    font-style: inherit;
+    font-variant: inherit;
 }
 
-table {
+#reports table {
     width: 100%;
     border-collapse: collapse;
 }
 
-tr {
+#reports tr {
     border-bottom: 1px black dotted;
 }
 
-th {
+#reports th {
     text-align: left;
 }
 
-tr.bug-row {
+#reports tr.bug-row {
     cursor: pointer;
 }
 
-tr.bug-row:hover {
+#reports tr.bug-row:hover {
     background: #f0f0f0;
 }
 
-th, td {
+#reports th, td {
     padding: 0.5em;
 }
 
@@ -131,9 +131,31 @@ th, td {
 }
 
 .dialog .content {
+    line-height: 1.5em;
     color: white;
     background: rgba(0, 0, 0, 0.75);
     padding: 2em;
     width: 50%;
     margin: 10em auto;
+}
+
+.dialog input {
+    border: 1px solid black;
+    background: #e0e0e0;
+    font-size: 12pt;
+    outline: none;
+    padding: 0.25em;
+    font-family: Helvetica Neue, Arial, sans-serif;
+}
+
+.dialog input:hover {
+    background: white;
+}
+
+.dialog .button {
+    cursor: pointer;
+}
+
+.dialog table {
+    margin-left: 0;
 }
