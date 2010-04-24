@@ -17,11 +17,27 @@ a:hover {
     display: inline;
 }
 
-#header #menu a {
-    color: gray;
+#header .menu {
+    margin: 0;
 }
 
-#header #menu {
+#header .menu li {
+    display: inline;
+    border-right: 1px solid black;
+    padding-left: 0.25em;
+    color: gray;
+    cursor: pointer;
+}
+
+#header .menu li:last-child {
+    border-right: none;
+}
+
+#header .menu li:hover {
+    background: yellow;
+}
+
+#header .menu {
     float: right;
 }
 
@@ -43,7 +59,11 @@ a:hover {
     width: 20em;
 }
 
-#templates, #form-cache {
+#templates {
+    display: none;
+}
+
+.dialog {
     display: none;
 }
 

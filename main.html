@@ -7,19 +7,41 @@
 </head>
 <body>
 <div id="header">
-  <h1>Bugzilla Dashboard</h1>
-  <div id="menu">
-    <a href="#account">Your Account</a> |
-    <a href="#bugs">Your Bugs</a> |
-    <a href="#find-user">User Search</a> |
-    <a href="#file-bug">File A Bug</a>
+  <h1 class="title"></h1>
+  <ul class="menu">
+    <li title="login" class="requires-login">Change User</span>
+    <li title="find-user" class="requires-auth-login">Find A User</span>
+    <li title="file-bug">File A Bug</span>
+  </ul>
 </div>
 <div id="reports">
 </div>
+<div id="login" class="dialog">
+  <form id="login-form">
+  <p>Enter your Bugzilla login information below.</p>
+  <p>Your browser sends these credentials directly to
+  Bugzilla over a secure connection&mdash;no third parties can access
+  them, including the server this page is hosted on.</p>
+  <table>
+    <tr>
+      <td>Your Username</td>
+      <td><input type="text" id="login-username"/></td>
+    </tr>
+    <tr>
+      <td>Your Password</td>
+      <td><input type="password" id="login-password"/></td>
+    </tr>
+  </table>
+  <br/>
+  <input type="submit" id="login-submit" value="View Dashboard"/>
+  </form>
+</div>
 </body>
+<!-- Base Scripts -->
 <script src="js/jquery.js"></script>
-<script src="js/date-utils.js"></script>
-<script src="js/bugzilla.js"></script>
 <script src="js/require.js"></script>
 <script src="js/main.js"></script>
+
+<!-- CommonJS Modules -->
+<script src="js/modules/require.js"></script>
 </html>
