@@ -1,0 +1,104 @@
+body {
+    font-family: Helvetica Neue, Arial, sans-serif;
+    font-size: 9pt;
+    background: white;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    background: yellow;
+}
+
+#header h1 {
+    display: inline;
+}
+
+#header #menu a {
+    color: gray;
+}
+
+#header #menu {
+    float: right;
+}
+
+#reports .container {
+    display: table;
+}
+
+#reports .container > div:first-child {
+    padding: 0;
+}
+
+#reports .container > div {
+    display: table-cell;
+    padding: 0 0.5em;
+}
+
+#reports .container h2 {
+    margin-top: 0;
+    width: 20em;
+}
+
+#templates, #form-cache {
+    display: none;
+}
+
+/* Rule to fix quirks-mode inheritance behavior */
+table, caption {
+  font-size: inherit;
+  font-weight: inherit;
+  font-style: inherit;
+  font-variant: inherit;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+tr {
+    border-bottom: 1px black dotted;
+}
+
+th {
+    text-align: left;
+}
+
+tr.bug-row {
+    cursor: pointer;
+}
+
+tr.bug-row:hover {
+    background: #f0f0f0;
+}
+
+th, td {
+    padding: 0.5em;
+}
+
+.P1.critical, .P1.blocker {
+    color: red;
+}
+
+.status-RESOLVED, .status-VERIFIED {
+    text-decoration: line-through;
+}
+
+.countdown {
+    color: #f0f0f0;
+}
+
+.bug-tooltip {
+    /* TODO: Actually display this. */
+    display: none;
+}
+
+.loading {
+    background-image: url('images/ajax-loader.gif');
+    background-repeat: no-repeat;
+    background-position: top right;
+}
