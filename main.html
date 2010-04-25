@@ -16,7 +16,14 @@
   </ul>
 </div>
 <div id="loading-screen" class="loading">&nbsp;</div>
-<div id="reports">
+<div id="reports" class="requires-login hide-while-loading">
+  <div class="container">
+    <div id="code-reviews"><h2>My Things To Review</h2></div>
+    <div id="assigned-bugs"><h2>My Assigned Bugs</h2></div>
+    <div id="reported-bugs"><h2>My Reported Bugs</h2></div>
+    <div id="cc-bugs"><h2>My CC'd Bugs</h2></div>
+    <div id="fixed-bugs"><h2>Recently Fixed Bugs</h2></div>
+  </div>
 </div>
 <div id="login" class="dialog">
   <div class="content">
@@ -40,18 +47,52 @@
   </form>
   </div>
 </div>
+<div id="templates">
+  <div class="bug-tooltip">
+    <div>
+      <span class="priority"></span>
+      <span class="severity"></span>
+    </div>
+    <div>
+      <span class="product"></span>
+      <span class="component"></span>
+    </div>
+    <div>Created <span class="age"></span></div>
+  </div>
+  <table class="bugs">
+    <tr class="header">
+      <th>Summary</th>
+      <th>Last&nbsp;Changed</th>
+    </tr>
+    <tr class="bug-row">
+      <td class="summary"></td>
+      <td class="last-changed"></td>
+    </tr>
+  </table>
+</div>
 </body>
 <!-- Base Scripts -->
 <script src="js/jquery.js"></script>
 <script src="js/require.js"></script>
+<script src="js/bugzilla.js"></script>
 <script>
 $(window).ready(function() {
-  var moduleScripts = [
-    "js/modules/app.js"
+  var moduleScriptNames = [
+    "app",
+    "date-utils",
+    "cache"
   ];
 
+  var moduleScripts = [];
+
+  moduleScriptNames.forEach(function(name) {
+    moduleScripts.push("js/modules/" + name + ".js");
+  });
+
   var customModuleExports = {
-    jQuery: jQuery
+    jQuery: jQuery,
+    bugzilla: Bugzilla,
+    window: window
   };
 
   Require.preload(document, moduleScripts, function whenLoaded() {

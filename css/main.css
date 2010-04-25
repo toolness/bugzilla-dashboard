@@ -46,6 +46,10 @@ a:hover {
     margin: 10em auto;
 }
 
+#reports {
+    padding-top: 1em;
+}
+
 #reports .container {
     display: table;
 }
