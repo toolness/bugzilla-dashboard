@@ -1,10 +1,11 @@
 var Require = {
   modules: {},
-  build: function build(modules) {
+  build: function build(modules, moduleExports) {
     if (!modules)
       modules = this.modules;
 
-    var moduleExports = {};
+    if (!moduleExports)
+      moduleExports = {};
 
     return function require(module) {
       if (!(module in moduleExports)) {
