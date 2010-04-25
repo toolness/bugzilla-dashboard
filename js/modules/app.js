@@ -20,9 +20,6 @@ Require.modules["app/login"] = function(exports) {
   };
 
   exports.set = function set(newUsername, newPassword) {
-    console.trace();
-    console.log("set", newUsername, newPassword,
-                username, password);
     if (newUsername == username && newPassword == password)
       return;
 
@@ -87,7 +84,6 @@ Require.modules["app/ui"] = function(exports, require) {
         show["no-auth"] = true;
       }
 
-      console.log(JSON.stringify(show));
       for (classSuffix in show) {
         var query = $(".requires-" + classSuffix);
         if (show[classSuffix])
