@@ -70,15 +70,18 @@ Require.modules["app/ui"] = function(exports, require) {
         "no-login": false,
         "login": false,
         "auth-login": false,
-        "no-auth": false
+        "no-auth": false,
+        "no-auth-login": false
       };
 
       if (user.isLoggedIn) {
         show["login"] = true;
         if (user.isAuthenticated)
           show["auth-login"] = true;
-        else
+        else {
           show["no-auth"] = true;
+          show["no-auth-login"] = true;
+        }
       } else {
         show["no-login"] = true;
         show["no-auth"] = true;
