@@ -20,6 +20,9 @@ Require.modules["app/login"] = function(exports) {
   };
 
   exports.set = function set(newUsername, newPassword) {
+    console.trace();
+    console.log("set", newUsername, newPassword,
+                username, password);
     if (newUsername == username && newPassword == password)
       return;
 
@@ -66,18 +69,31 @@ Require.modules["app/ui"] = function(exports, require) {
 
   require("app/login").whenChanged(
     function changeUI(user) {
+      var show = {
+        "no-login": false,
+        "login": false,
+        "auth-login": false,
+        "no-auth": false
+      };
+
       if (user.isLoggedIn) {
-        $(".requires-no-login").hide();
-        $(".requires-login").show();
-        if (user.isAuthenticated) {
-          $(".requires-auth-login").show();
-        } else {
-          $(".requires-auth-login").hide();
-        }
+        show["login"] = true;
+        if (user.isAuthenticated)
+          show["auth-login"] = true;
+        else
+          show["no-auth"] = true;
       } else {
-        $(".requires-no-login").show();
-        $(".requires-login").hide();
-        $(".requires-auth-login").hide();
+        show["no-login"] = true;
+        show["no-auth"] = true;
+      }
+
+      console.log(JSON.stringify(show));
+      for (classSuffix in show) {
+        var query = $(".requires-" + classSuffix);
+        if (show[classSuffix])
+          query.show();
+        else
+          query.hide();
       }
     });
 
