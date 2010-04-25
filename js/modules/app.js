@@ -60,6 +60,22 @@ Require.modules["app/bugzilla-auth"] = function(exports, require) {
   };
 };
 
+Require.modules["app/commands"] = function(exports, require) {
+  var commands = {};
+
+  exports.get = function get(name) {
+    if (!(name in commands))
+      throw new Error("command not found: " + name);
+    return commands[name];
+  };
+
+  exports.register = function(options) {
+    if (options.name in commands)
+      throw new Error("command already registered: " + options.name);
+    commands[options.name] = options;
+  };
+};
+
 Require.modules["app/ui/login-form"] = function(exports, require) {
   var $ = require("jQuery");
   var cachedUsername = $("#login .username").val();
@@ -246,8 +262,12 @@ Require.modules["app/ui"] = function(exports, require) {
     });
 
   $("#header .menu li").click(
-    function openDialogForMenuItem(event) {
-      openDialog(this.getAttribute("data-dialog"));
+    function onMenuItemClick(event) {
+      if (this.hasAttribute("data-command")) {
+        var cmdName = this.getAttribute("data-command");
+        require("app/commands").get(cmdName).execute();
+      } else
+        openDialog(this.getAttribute("data-dialog"));
     });
 
   $(".dialog").click(
@@ -531,7 +551,17 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_reporter: 1});
   };
 
+  var refreshCommand = {
+    name: "refresh-dashboard",
+    execute: function execute() {
+      var user = require("app/login").get();
+      if (user.isLoggedIn)
+        update(user.username);
+    }
+  };
+
   exports.init = function init() {
+    require("app/commands").register(refreshCommand);
     require("app/login").whenChanged(
       function changeSearchCriteria(user) {
         if (user.isLoggedIn) {
