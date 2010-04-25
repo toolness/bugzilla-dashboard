@@ -180,7 +180,10 @@ Require.modules["app/ui"] = function(exports, require) {
       var dialog = $("#" + name);
       if (dialog.length == 0)
         throw new Error("dialog not found: " + name);
-      dialog.fadeIn();
+      dialog.fadeIn(
+        function() {
+          dialog.find("input:first").focus();
+        });
     });
 
   $(".dialog").click(
