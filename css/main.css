@@ -161,6 +161,7 @@ table, caption {
     outline: none;
     padding: 0.5em;
     font-family: Helvetica Neue, Arial, sans-serif;
+    width: 25em;
 }
 
 .dialog input:hover {
