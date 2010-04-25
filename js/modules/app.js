@@ -457,12 +457,13 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
       });
   }
 
-  function report(selector, searchTerms) {
+  function report(selector, key, searchTerms) {
     var newTerms = {__proto__: defaults};
     for (name in searchTerms)
       newTerms[name.replace(/_DOT_/g, ".")] = searchTerms[name];
 
-    var cached = cache.get(selector);
+    var cacheKey = key + "/" + selector;
+    var cached = cache.get(cacheKey);
     if (cached)
       showBugs($(selector), cached);
     
@@ -470,7 +471,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     
     bugzilla.search(newTerms,
                     function(response) {
-                      cache.set(selector, response.bugs);
+                      cache.set(cacheKey, response.bugs);
                       showBugs($(selector), response.bugs);
                       $(selector).find("h2").removeClass("loading");
                     });
@@ -491,13 +492,13 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
   };
 
   function update(myUsername) {
-    report("#assigned-bugs",
+    report("#assigned-bugs", myUsername,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1});
 
-    report("#fixed-bugs",
+    report("#fixed-bugs", myUsername,
            {resolution: ["FIXED"],
             changed_after: timeAgo(MS_PER_WEEK),
             email1: myUsername,
@@ -506,11 +507,11 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email1_reporter: 1,
             email1_cc: 1});
 
-    report("#code-reviews",
+    report("#code-reviews", myUsername,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             flag_DOT_requestee: myUsername});
 
-    report("#reported-bugs",
+    report("#reported-bugs", myUsername,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
@@ -519,7 +520,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_type: "not_equals",
             email2_assigned_to: 1});
 
-    report("#cc-bugs",
+    report("#cc-bugs", myUsername,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
