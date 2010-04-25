@@ -270,6 +270,16 @@ Require.modules["app/ui"] = function(exports, require) {
         $(this).fadeOut();
     });
 
+  function dismissDialogOnEscape(event) {
+    if (event.keyCode == 27)
+      $(this).fadeOut();
+  }
+
+  // For Safari.
+  $(".dialog").keyup(dismissDialogOnEscape);
+  // For Firefox.
+  $(".dialog").keypress(dismissDialogOnEscape);
+
   function setupDocumentTitleChanger(document) {
     const BASE_TITLE = document.title;
 
