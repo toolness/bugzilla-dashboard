@@ -18,6 +18,24 @@ var Require = {
       }
       return moduleExports[module];
     };
+  },
+  preload: function preload(document, scripts, cb) {
+    var scriptsLeft = scripts.length;
+
+    function onScriptLoaded() {
+      scriptsLeft--;
+      if (!scriptsLeft)
+        cb();
+    };
+
+    scripts.forEach(
+      function(scriptName) {
+        var script = document.createElement("script");
+
+        script.src = scriptName;
+        script.onload = onScriptLoaded;
+        document.body.appendChild(script);
+      });
   }
 };
 

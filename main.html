@@ -15,6 +15,7 @@
     <li title="file-bug">File A Bug</span>
   </ul>
 </div>
+<div id="loading-screen" class="loading">&nbsp;</div>
 <div id="reports">
 </div>
 <div id="login" class="dialog">
@@ -43,8 +44,21 @@
 <!-- Base Scripts -->
 <script src="js/jquery.js"></script>
 <script src="js/require.js"></script>
-<script src="js/main.js"></script>
+<script>
+$(window).ready(function() {
+  var moduleScripts = [
+    "js/modules/app.js"
+  ];
 
-<!-- CommonJS Modules -->
-<script src="js/modules/app.js"></script>
+  var customModuleExports = {
+    jQuery: jQuery
+  };
+
+  Require.preload(document, moduleScripts, function whenLoaded() {
+    $("#loading-screen").hide();
+    var require = Require.build(Require.modules, customModuleExports);
+    require("app/ui").init(document);
+  });
+});
+</script>
 </html>

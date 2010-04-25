@@ -41,6 +41,11 @@ a:hover {
     float: right;
 }
 
+#loading-screen {
+    width: 2em;
+    margin: 10em auto;
+}
+
 #reports .container {
     display: table;
 }
