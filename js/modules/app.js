@@ -53,9 +53,10 @@ Require.modules["app/ui"] = function(exports, require) {
 
   $("#header .menu li").click(
     function openDialog(event) {
-      var dialog = $("#" + this.title);
+      var name = this.getAttribute("data-dialog");
+      var dialog = $("#" + name);
       if (dialog.length == 0)
-        throw new Error("dialog not found: " + this.title);
+        throw new Error("dialog not found: " + name);
       dialog.fadeIn();
     });
 
