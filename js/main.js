@@ -48,16 +48,16 @@ $(window).ready(
           $(this).fadeOut();
       });
 
-    $("#login-form").submit(
+    $("#login form").submit(
       function(event) {
         event.preventDefault();
-        require("app/login").set($("#login-username").val(),
-                                 $("#login-password").val());
+        require("app/login").set($("#login .username").val(),
+                                 $("#login .password").val());
         $("#login").fadeOut();
       });
 
-    require("app/login").set($("#login-username").val(),
-                             $("#login-password").val());
+    require("app/login").set($("#login .username").val(),
+                             $("#login .password").val());
     if (!require("app/login").isLoggedIn())
       $("#login").fadeIn();
   });
