@@ -32,6 +32,24 @@ Require.modules["app/login"] = function(exports) {
   };
 };
 
+Require.modules["app/bugzilla-auth"] = function(exports, require) {
+  exports.Bugzilla = {
+    ajax: function ajax(options) {
+      var user = require("app/login").get();
+
+      if (user.isAuthenticated) {
+        if (!options.data)
+          options.data = {};
+        options.data.username = user.username;
+        options.data.password = user.password;
+      }
+
+      return this.__proto__.ajax.call(this, options);
+    },
+    __proto__: require("bugzilla")
+  };
+};
+
 Require.modules["app/ui/login-form"] = function(exports, require) {
   var $ = require("jQuery");
 
@@ -196,7 +214,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
   var $ = require("jQuery");
   var cache = require("cache");
   var dateUtils = require("date-utils");
-  var bugzilla = require("bugzilla");
+  var bugzilla = require("app/bugzilla-auth").Bugzilla;
   var window = require("window");
 
   function sortByLastChanged(bugs) {
