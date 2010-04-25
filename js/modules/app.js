@@ -8,7 +8,7 @@ Require.modules["app/login"] = function(exports) {
   };
 
   exports.isLoggedIn = function isLoggedIn() {
-    return (username != "");
+    return (username && username != "");
   };
 
   exports.set = function set(newUsername, newPassword) {
@@ -18,8 +18,8 @@ Require.modules["app/login"] = function(exports) {
     username = newUsername;
     password = newPassword;
 
-    var isLoggedIn = (username != "");
-    var isAuthenticated = (username != "" && password != "");
+    var isLoggedIn = (username && username != "");
+    var isAuthenticated = (isLoggedIn && password && password != "");
 
     callbacks.forEach(
       function(cb) {
