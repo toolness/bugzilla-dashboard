@@ -97,6 +97,84 @@ Require.modules["app/ui/login-form"] = function(exports, require) {
   };
 };
 
+Require.modules["app/ui/file-bug"] = function(exports, require) {
+  const EM_DASH = "\u2014";
+
+  var $ = require("jQuery");
+  var cache = require("cache");
+  var bugzilla = require("app/bugzilla-auth").Bugzilla;
+  var window = require("window");
+  var config = cache.get("configuration");
+  var needToFetchConfig = config ? false : true;
+  var categories;
+  var queuedRespond;
+
+  function buildCategories() {
+    categories = [];
+    for (product in config.product)
+      for (component in config.product[product].component)
+        categories.push(product + EM_DASH + component);
+  }
+
+  function fetchConfig() {
+    bugzilla.ajax({url: "/configuration",
+                   data: {flags: 0},
+                   success: function(result) {
+                     config = result;
+                     cache.set("configuration", result);
+                     if (queuedRespond)
+                       queuedRespond();
+                   }});
+  }
+
+  var categoryOptions = {
+    minLength: 2,
+    source: function(request, response) {
+      function respond() {
+        queuedRespond = null;
+
+        var suggs = [];
+        var terms = request.term.split(" ");
+
+        if (!categories)
+          buildCategories();
+
+        categories.forEach(
+          function(category) {
+            for (var i = 0; i < terms.length; i++)
+              if (!category.match(terms[i], "i"))
+                return;
+            suggs.push(category);
+          });
+
+        response(suggs);
+      };
+
+      if (!config) {
+        queuedRespond = respond;
+        if (needToFetchConfig) {
+          needToFetchConfig = false;
+          fetchConfig();
+        }
+      } else
+        respond();
+    }
+  };
+
+  $("input#category").autocomplete(categoryOptions);
+  $("#file-bug").submit(
+    function(event) {
+      event.preventDefault();
+      var parts = $("input#category").val().split(EM_DASH);
+      window.open(bugzilla.BASE_UI_URL + "/enter_bug.cgi?" +
+                  "product=" + escape(parts[0]) + "&" +
+                  "component=" + escape(parts[1]));
+    });
+
+  exports.init = function init() {
+  };
+};
+
 Require.modules["app/ui/find-user"] = function(exports, require) {
   var $ = require("jQuery");
   var bugzilla = require("app/bugzilla-auth").Bugzilla;
@@ -219,6 +297,7 @@ Require.modules["app/ui"] = function(exports, require) {
     require("app/ui/dashboard").init();
     require("app/ui/login-form").init();
     require("app/ui/find-user").init();
+    require("app/ui/file-bug").init();
     require("app/ui/hash").init(document);
 
     startupCallbacks.forEach(function(cb) { cb(); });
