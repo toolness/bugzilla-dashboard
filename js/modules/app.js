@@ -97,6 +97,47 @@ Require.modules["app/ui/login-form"] = function(exports, require) {
   };
 };
 
+Require.modules["app/ui/find-user"] = function(exports, require) {
+  var $ = require("jQuery");
+  var bugzilla = require("app/bugzilla-auth").Bugzilla;
+  var window = require("window");
+  var currReq;
+
+  var options = {
+    minLength: 2,
+    delay: 1000,
+    source: function(request, response) {
+      function success(result) {
+        currReq = null;
+        var suggs = [];
+        result.users.forEach(
+          function(user) {
+            suggs.push({label: user.real_name + " (" + user.name + ")",
+                        value: user.name});
+          });
+        response(suggs);
+      }
+      if (currReq)
+        currReq.abort();
+      currReq = bugzilla.ajax({url: "/user",
+                               data: {match: request.term},
+                               success: success});
+    }
+  };
+
+  $("#find-user .query").autocomplete(options);
+  $("#find-user form").submit(
+    function(event) {
+      event.preventDefault();
+      var username = $("#find-user .query").val();
+      var url = require("app/ui/hash").usernameToHash(username);
+      window.open(url);
+    });
+
+  exports.init = function init() {
+  };
+};
+
 Require.modules["app/ui"] = function(exports, require) {
   var $ = require("jQuery");
   var startupCallbacks = [];
@@ -174,6 +215,7 @@ Require.modules["app/ui"] = function(exports, require) {
 
     require("app/ui/dashboard").init();
     require("app/ui/login-form").init();
+    require("app/ui/find-user").init();
     require("app/ui/hash").init(document);
 
     startupCallbacks.forEach(function(cb) { cb(); });
@@ -191,10 +233,6 @@ Require.modules["app/ui/hash"] = function(exports, require) {
     return "";
   }
 
-  function usernameToHash(username) {
-    return "#username=" + escape(username);
-  }
-
   function setLoginFromHash(location) {
     var username = usernameFromHash(location);
 
@@ -203,11 +241,15 @@ Require.modules["app/ui/hash"] = function(exports, require) {
       require("app/login").set(username);
   }
 
+  exports.usernameToHash = function usernameToHash(username) {
+    return "#username=" + escape(username);
+  };
+
   exports.init = function init(document) {
     require("app/login").whenChanged(
       function(user) {
         if (user.isLoggedIn) {
-          var hash = usernameToHash(user.username);
+          var hash = exports.usernameToHash(user.username);
           if (document.location.hash != hash)
             document.location.hash = hash;
         } else

@@ -167,6 +167,16 @@ table, caption {
     background: white;
 }
 
+.dialog input:focus {
+    background: white;
+}
+
+.dialog input.ui-autocomplete-loading {
+    background-image: url('images/ajax-loader.gif');
+    background-repeat: no-repeat;
+    background-position: 95% 35%;
+}
+
 .dialog input[type=submit] {
     cursor: pointer;
 }
