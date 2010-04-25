@@ -2,53 +2,62 @@ $(window).ready(
   function() {
     const BASE_TITLE = document.title;
 
-    function onLoginChange() {
-      var username = $("#login-username").val();
-      var password = $("#login-password").val();
-      var title = BASE_TITLE;
+    var require = Require.build();
 
-      if (username) {
-        $("#login").fadeOut();
-        title = username + "'s " + BASE_TITLE;
+    require("app/login").whenChanged(
+      function changeTitle(user) {
+        var title = BASE_TITLE;
 
-        $(".requires-no-login").hide();
-        $(".requires-login").show();
-        if (password) {
-          $(".requires-auth-login").show();
+        if (user.isLoggedIn)
+          title = user.username + "'s " + BASE_TITLE;
+
+        if (document.title != title) {
+          document.title = title;
+          $("#header .title").text(title);
+        }
+      });
+
+    require("app/login").whenChanged(
+      function changeUI(user) {
+        if (user.isLoggedIn) {
+          $(".requires-no-login").hide();
+          $(".requires-login").show();
+          if (user.isAuthenticated) {
+            $(".requires-auth-login").show();
+          } else {
+            $(".requires-auth-login").hide();
+          }
         } else {
+          $(".requires-no-login").show();
+          $(".requires-login").hide();
           $(".requires-auth-login").hide();
         }
-      } else {
-        $("#login").fadeIn();
-        $(".requires-no-login").show();
-        $(".requires-login").hide();
-        $(".requires-auth-login").hide();
-      }
-
-      if (document.title != title) {
-        document.title = title;
-        $("#header .title").text(title);
-      }
-    }
+      });
 
     $("#header .menu li").click(
-      function(event) {
+      function openDialog(event) {
         var dialog = $("#" + this.title);
         if (dialog.length == 0)
           throw new Error("dialog not found: " + this.title);
         dialog.fadeIn();
       });
 
-    $("#login-form").submit(
-      function(event) {
-        event.preventDefault();
-        onLoginChange();
-      });
-
     $(".dialog").click(
-      function(event) {
+      function dismissDialogOnOutsideClick(event) {
         if (event.target == this)
           $(this).fadeOut();
       });
-    onLoginChange();
+
+    $("#login-form").submit(
+      function(event) {
+        event.preventDefault();
+        require("app/login").set($("#login-username").val(),
+                                 $("#login-password").val());
+        $("#login").fadeOut();
+      });
+
+    require("app/login").set($("#login-username").val(),
+                             $("#login-password").val());
+    if (!require("app/login").isLoggedIn())
+      $("#login").fadeIn();
   });
