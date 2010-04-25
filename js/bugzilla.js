@@ -30,7 +30,7 @@ var Bugzilla = {
       options.success(JSON.parse(xhr.responseText));
     }
 
-    var xhr = new XMLHttpRequest();
+    var xhr = options.xhr ? options.xhr : new XMLHttpRequest();
     var url = this.BASE_URL + options.url;
 
     if (options.data)
