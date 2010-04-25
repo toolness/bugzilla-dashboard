@@ -2,6 +2,11 @@ Require.modules["app/login"] = function(exports) {
   var callbacks = [];
   var username;
   var password;
+  var passwordProvider;
+
+  exports.setPasswordProvider = function setPasswordProvider(pp) {
+    passwordProvider = pp;
+  };
 
   exports.whenChanged = function whenChanged(cb) {
     callbacks.push(cb);
@@ -20,6 +25,11 @@ Require.modules["app/login"] = function(exports) {
   };
 
   exports.set = function set(newUsername, newPassword) {
+    if ((newUsername && newUsername != "") &&
+        (!newPassword || newPassword == "") &&
+        (passwordProvider))
+      newPassword = passwordProvider(newUsername);
+
     if (newUsername == username && newPassword == password)
       return;
 
@@ -52,6 +62,8 @@ Require.modules["app/bugzilla-auth"] = function(exports, require) {
 
 Require.modules["app/ui/login-form"] = function(exports, require) {
   var $ = require("jQuery");
+  var cachedUsername = $("#login .username").val();
+  var cachedPassword = $("#login .password").val();
 
   $("#login form").submit(
     function(event) {
@@ -66,6 +78,13 @@ Require.modules["app/ui/login-form"] = function(exports, require) {
       var usernameField = $("#login .username");
       if (user.isLoggedIn && usernameField.val() != user.username)
         usernameField.val(user.username);
+    });
+
+  require("app/login").setPasswordProvider(
+    function maybeGetCachedPasswordFromForm(username) {
+      if (cachedUsername == username)
+        return cachedPassword;
+      return "";
     });
 
   require("app/ui").whenStarted(
@@ -181,7 +200,7 @@ Require.modules["app/ui/hash"] = function(exports, require) {
 
     var user = require("app/login").get();
     if (user.username != username)
-      require("app/login").set(username, "");
+      require("app/login").set(username);
   }
 
   exports.init = function init(document) {
