@@ -8,7 +8,7 @@
 <body>
 <div id="header">
   <h1 class="title">Bugzilla Dashboard</h1>
-  <ul class="menu">
+  <ul class="menu hide-while-loading">
     <li title="login" class="requires-no-login">Log In</span>
     <li title="login" class="requires-login">Change User</span>
     <li title="find-user" class="requires-auth-login">Find A User</span>
@@ -56,6 +56,7 @@ $(window).ready(function() {
 
   Require.preload(document, moduleScripts, function whenLoaded() {
     $("#loading-screen").hide();
+    $(".hide-while-loading").show();
     var require = Require.build(Require.modules, customModuleExports);
     require("app/ui").init(document);
   });

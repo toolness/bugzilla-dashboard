@@ -164,3 +164,7 @@ table, caption {
 .dialog table {
     margin-left: 0;
 }
+
+.hide-while-loading {
+    display: none;
+}
