@@ -87,12 +87,6 @@ Require.modules["app/ui/login-form"] = function(exports, require) {
       return "";
     });
 
-  require("app/ui").whenStarted(
-    function maybeShowLoginForm() {
-      if (!require("app/login").get().isLoggedIn)
-        $("#login").fadeIn();
-    });
-
   exports.init = function init() {
   };
 };
@@ -218,7 +212,6 @@ Require.modules["app/ui/find-user"] = function(exports, require) {
 
 Require.modules["app/ui"] = function(exports, require) {
   var $ = require("jQuery");
-  var startupCallbacks = [];
 
   require("app/login").whenChanged(
     function changeUI(user) {
@@ -253,15 +246,8 @@ Require.modules["app/ui"] = function(exports, require) {
     });
 
   $("#header .menu li").click(
-    function openDialog(event) {
-      var name = this.getAttribute("data-dialog");
-      var dialog = $("#" + name);
-      if (dialog.length == 0)
-        throw new Error("dialog not found: " + name);
-      dialog.fadeIn(
-        function() {
-          dialog.find("input:first").focus();
-        });
+    function openDialogForMenuItem(event) {
+      openDialog(this.getAttribute("data-dialog"));
     });
 
   $(".dialog").click(
@@ -297,8 +283,14 @@ Require.modules["app/ui"] = function(exports, require) {
       });
   };
 
-  exports.whenStarted = function whenStarted(cb) {
-    startupCallbacks.push(cb);
+  function openDialog(name) {
+    var dialog = $("#" + name);
+    if (dialog.length == 0)
+      throw new Error("dialog not found: " + name);
+    dialog.fadeIn(
+      function() {
+        dialog.find("input:first").focus();
+      });
   };
 
   exports.init = function init(document) {
@@ -310,8 +302,8 @@ Require.modules["app/ui"] = function(exports, require) {
     require("app/ui/file-bug").init();
     require("app/ui/hash").init(document);
 
-    startupCallbacks.forEach(function(cb) { cb(); });
-    startupCallbacks.splice(0);
+    if (!require("app/login").get().isLoggedIn)
+      openDialog("login");
   };
 };
 
