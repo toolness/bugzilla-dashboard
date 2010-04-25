@@ -7,8 +7,16 @@ Require.modules["app/login"] = function(exports) {
     callbacks.push(cb);
   };
 
-  exports.isLoggedIn = function isLoggedIn() {
-    return (username && username != "");
+  exports.get = function get() {
+    var isLoggedIn = (username && username != "");
+    var isAuthenticated = (isLoggedIn && password && password != "");
+
+    return {
+      username: username,
+      password: password,
+      isLoggedIn: isLoggedIn,
+      isAuthenticated: isAuthenticated
+    };
   };
 
   exports.set = function set(newUsername, newPassword) {
@@ -18,21 +26,43 @@ Require.modules["app/login"] = function(exports) {
     username = newUsername;
     password = newPassword;
 
-    var isLoggedIn = (username && username != "");
-    var isAuthenticated = (isLoggedIn && password && password != "");
+    var info = exports.get();
 
-    callbacks.forEach(
-      function(cb) {
-        cb({username: username,
-            password: password,
-            isLoggedIn: isLoggedIn,
-            isAuthenticated: isAuthenticated});
-      });
+    callbacks.forEach(function(cb) { cb(info); });
+  };
+};
+
+Require.modules["app/ui/login-form"] = function(exports, require) {
+  var $ = require("jQuery");
+
+  $("#login form").submit(
+    function(event) {
+      event.preventDefault();
+      require("app/login").set($("#login .username").val(),
+                               $("#login .password").val());
+      $("#login").fadeOut();
+    });
+
+  require("app/login").whenChanged(
+    function maybeChangeUsernameField(user) {
+      var usernameField = $("#login .username");
+      if (user.isLoggedIn && usernameField.val() != user.username)
+        usernameField.val(user.username);
+    });
+
+  require("app/ui").whenStarted(
+    function maybeShowLoginForm() {
+      if (!require("app/login").get().isLoggedIn)
+        $("#login").fadeIn();
+    });
+
+  exports.init = function init() {
   };
 };
 
 Require.modules["app/ui"] = function(exports, require) {
   var $ = require("jQuery");
+  var startupCallbacks = [];
 
   require("app/login").whenChanged(
     function changeUI(user) {
@@ -83,22 +113,67 @@ Require.modules["app/ui"] = function(exports, require) {
       });
   };
 
+  exports.whenStarted = function whenStarted(cb) {
+    startupCallbacks.push(cb);
+  };
+
   exports.init = function init(document) {
     setupDocumentTitleChanger(document);
 
-    $("#login form").submit(
-      function(event) {
-        event.preventDefault();
-        require("app/login").set($("#login .username").val(),
-                                 $("#login .password").val());
-        $("#login").fadeOut();
+    require("app/ui/dashboard").init();
+    require("app/ui/login-form").init();
+    require("app/ui/hash").init(document);
+
+    startupCallbacks.forEach(function(cb) { cb(); });
+    startupCallbacks.splice(0);
+  };
+};
+
+Require.modules["app/ui/hash"] = function(exports, require) {
+  function usernameFromHash(location) {
+    if (location.hash) {
+      var match = location.hash.match(/#username=(.*)/);
+      if (match)
+        return unescape(match[1]);
+    }
+    return "";
+  }
+
+  function usernameToHash(username) {
+    return "#username=" + escape(username);
+  }
+
+  function setLoginFromHash(location) {
+    var username = usernameFromHash(location);
+
+    var user = require("app/login").get();
+    if (user.username != username)
+      require("app/login").set(username, "");
+  }
+
+  exports.init = function init(document) {
+    require("app/login").whenChanged(
+      function(user) {
+        if (user.isLoggedIn) {
+          var hash = usernameToHash(user.username);
+          if (document.location.hash != hash)
+            document.location.hash = hash;
+        } else
+          document.location.hash = "";
       });
 
-    require("app/ui/dashboard").init();
-    require("app/login").set($("#login .username").val(),
-                             $("#login .password").val());
-    if (!require("app/login").isLoggedIn())
-      $("#login").fadeIn();
+    var window = document.defaultView;
+
+    function onHashChange() {
+      setLoginFromHash(document.location);
+    }
+
+    if ("onhashchange" in window)
+      window.addEventListener("hashchange", onHashChange, false);
+    else
+      window.setInterval(onHashChange, 1000);
+
+    onHashChange();
   };
 };
 
