@@ -19,26 +19,32 @@ a:hover {
 
 #header .menu {
     margin: 0;
+    padding: 0.5em;
+    background: rgba(0, 0, 0, 0.75);
+    position: fixed;
+    right: 0;
+    top: 0;
 }
 
 #header .menu li {
     display: inline;
-    border-right: 1px solid black;
-    padding-left: 0.25em;
-    color: gray;
+    color: white;
+}
+
+#header .menu li:last-child:after {
+    content: "";
+}
+
+#header .menu li:after {
+    content: " | ";
+}
+
+#header .menu li span {
     cursor: pointer;
 }
 
-#header .menu li:last-child {
-    border-right: none;
-}
-
-#header .menu li:hover {
-    background: yellow;
-}
-
-#header .menu {
-    float: right;
+#header .menu li span:hover {
+    text-decoration: underline;
 }
 
 #loading-screen {
