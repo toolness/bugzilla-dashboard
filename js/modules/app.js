@@ -525,16 +525,19 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
       });
   }
 
-  function report(selector, key, searchTerms) {
+  function report(selector, key, forceUpdate, searchTerms) {
     var newTerms = {__proto__: defaults};
     for (name in searchTerms)
       newTerms[name.replace(/_DOT_/g, ".")] = searchTerms[name];
 
     var cacheKey = key + "/" + selector;
     var cached = cache.get(cacheKey);
-    if (cached)
+    if (cached) {
       showBugs($(selector), cached);
-    
+      if (!forceUpdate)
+        return;
+    }
+
     $(selector).find("h2").addClass("loading");
     
     xhrQueue.enqueue(
@@ -563,20 +566,20 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     changed_after: timeAgo(MS_PER_WEEK * 14)
   };
 
-  function update(myUsername) {
+  function update(myUsername, forceUpdate) {
     xhrQueue.clear();
 
-    report("#code-reviews", myUsername,
+    report("#code-reviews", myUsername, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             flag_DOT_requestee: myUsername});
 
-    report("#assigned-bugs", myUsername,
+    report("#assigned-bugs", myUsername, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1});
 
-    report("#reported-bugs", myUsername,
+    report("#reported-bugs", myUsername, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
@@ -585,7 +588,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_type: "not_equals",
             email2_assigned_to: 1});
 
-    report("#cc-bugs", myUsername,
+    report("#cc-bugs", myUsername, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
@@ -595,7 +598,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_assigned_to: 1,
             email2_reporter: 1});
 
-    report("#fixed-bugs", myUsername,
+    report("#fixed-bugs", myUsername, forceUpdate,
            {resolution: ["FIXED"],
             changed_after: timeAgo(MS_PER_WEEK),
             email1: myUsername,
@@ -610,7 +613,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     execute: function execute() {
       var user = require("app/login").get();
       if (user.isLoggedIn)
-        update(user.username);
+        update(user.username, true);
     }
   };
 
@@ -619,7 +622,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     require("app/login").whenChanged(
       function changeSearchCriteria(user) {
         if (user.isLoggedIn) {
-          update(user.username);
+          update(user.username, false);
         }
       });
   };
