@@ -150,6 +150,9 @@ $(window).ready(function() {
     moduleScripts.push("js/modules/" + name + ".js");
   });
 
+  if (!('JSON' in window))
+    moduleScripts.push("js/json2.js");
+
   Require.preload(document, moduleScripts, function whenLoaded() {
     $("#loading-screen").hide();
     $(".hide-while-loading").show();
