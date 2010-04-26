@@ -3,7 +3,7 @@ Require.modules["app/loader"] = function(exports, require) {
     var bugzilla = require("app/bugzilla-auth").create(options.Bugzilla);
     moduleExports.bugzilla = bugzilla;
     moduleExports.window = options.window;
-    moduleExports.storage = options.window.localStorage;
+    moduleExports.storage = options.window.sessionStorage;
     moduleExports.jQuery = options.jQuery;
 
     require("app/ui").init(options.window.document);
