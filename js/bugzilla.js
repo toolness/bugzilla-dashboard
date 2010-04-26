@@ -43,12 +43,12 @@ var Bugzilla = {
     return xhr;
   },
   getBug: function Bugzilla_getBug(id, cb) {
-    this.ajax({url: "/bug/" + id,
-               success: cb});
+    return this.ajax({url: "/bug/" + id,
+                      success: cb});
   },
   search: function Bugzilla_search(query, cb) {
-    this.ajax({url: "/bug",
-               data: query,
-               success: cb});
+    return this.ajax({url: "/bug",
+                      data: query,
+                      success: cb});
   }
 };

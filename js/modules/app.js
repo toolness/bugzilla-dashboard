@@ -42,49 +42,8 @@ Require.modules["app/login"] = function(exports) {
   };
 };
 
-Require.modules["app/bugzilla-serial"] = function(exports, require) {
-  const EVENTS = ["abort", "error", "load"];
-
-  var myproto = require("bugzilla");
-  var active = null;
-  var queue = [];
-
-  function enqueue(bugzilla, options) {
-    queue.push({bugzilla: bugzilla, options: options});
-    if (!active)
-      activateNextInQueue();
-  }
-
-  function activateNextInQueue() {
-    if (queue.length) {
-      var entry = queue.splice(0, 1)[0];
-      var xhr = myproto.ajax.call(entry.bugzilla, entry.options);
-      EVENTS.forEach(function(name) {
-        xhr.addEventListener(name, onDone, false);
-      });
-      active = xhr;
-    } else
-      active = null;
-  }
-
-  function onDone(event) {
-    var xhr = event.target;
-    EVENTS.forEach(function(name) {
-      xhr.removeEventListener(name, onDone, false);
-    });
-    activateNextInQueue();
-  };
-
-  exports.Bugzilla = {
-    ajax: function ajax(options) {
-      enqueue(this, options);
-    },
-    __proto__: myproto
-  };
-};
-
 Require.modules["app/bugzilla-auth"] = function(exports, require) {
-  var myproto = require("app/bugzilla-serial").Bugzilla;
+  var myproto = require("bugzilla");
 
   exports.Bugzilla = {
     ajax: function ajax(options) {
@@ -424,6 +383,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
   var dateUtils = require("date-utils");
   var bugzilla = require("app/bugzilla-auth").Bugzilla;
   var window = require("window");
+  var xhrQueue = require("xhr/queue").create();
 
   function sortByLastChanged(bugs) {
     var lctimes = {};
@@ -532,12 +492,16 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     
     $(selector).find("h2").addClass("loading");
     
-    bugzilla.search(newTerms,
-                    function(response) {
-                      cache.set(cacheKey, response.bugs);
-                      showBugs($(selector), response.bugs);
-                      $(selector).find("h2").removeClass("loading");
-                    });
+    xhrQueue.enqueue(
+      function() {
+        return bugzilla.search(
+          newTerms,
+          function(response) {
+            cache.set(cacheKey, response.bugs);
+            showBugs($(selector), response.bugs);
+            $(selector).find("h2").removeClass("loading");
+          });
+      });
   }
 
   function timeAgo(ms) {
@@ -555,6 +519,8 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
   };
 
   function update(myUsername) {
+    xhrQueue.clear();
+
     report("#code-reviews", myUsername,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             flag_DOT_requestee: myUsername});
