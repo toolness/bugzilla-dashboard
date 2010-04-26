@@ -1,3 +1,14 @@
+Require.modules["app/loader"] = function(exports, require) {
+  exports.init = function init(moduleExports, options) {
+    var bugzilla = require("app/bugzilla-auth").create(options.Bugzilla);
+    moduleExports.bugzilla = bugzilla;
+    moduleExports.window = options.window;
+    moduleExports.jQuery = options.jQuery;
+
+    require("app/ui").init(options.window.document);
+  };
+};
+
 Require.modules["app/login"] = function(exports) {
   var callbacks = [];
   var username;
@@ -43,22 +54,25 @@ Require.modules["app/login"] = function(exports) {
 };
 
 Require.modules["app/bugzilla-auth"] = function(exports, require) {
-  var myproto = require("bugzilla");
+  exports.create = function(Bugzilla) {
+    function AuthenticatedBugzilla() {
+      this.ajax = function ajax(options) {
+        var user = require("app/login").get();
 
-  exports.Bugzilla = {
-    ajax: function ajax(options) {
-      var user = require("app/login").get();
+        if (user.isAuthenticated) {
+          if (!options.data)
+            options.data = {};
+          options.data.username = user.username;
+          options.data.password = user.password;
+        }
 
-      if (user.isAuthenticated) {
-        if (!options.data)
-          options.data = {};
-        options.data.username = user.username;
-        options.data.password = user.password;
-      }
+        return Bugzilla.ajax.call(this, options);
+      };
+    }
 
-      return myproto.ajax.call(this, options);
-    },
-    __proto__: myproto
+    AuthenticatedBugzilla.prototype = Bugzilla;
+
+    return new AuthenticatedBugzilla();
   };
 };
 
@@ -114,7 +128,7 @@ Require.modules["app/ui/file-bug"] = function(exports, require) {
 
   var $ = require("jQuery");
   var cache = require("cache");
-  var bugzilla = require("app/bugzilla-auth").Bugzilla;
+  var bugzilla = require("bugzilla");
   var window = require("window");
   var config = cache.get("configuration");
   var needToFetchConfig = config ? false : true;
@@ -209,7 +223,7 @@ Require.modules["app/ui/repair"] = function(exports, require) {
 
 Require.modules["app/ui/find-user"] = function(exports, require) {
   var $ = require("jQuery");
-  var bugzilla = require("app/bugzilla-auth").Bugzilla;
+  var bugzilla = require("bugzilla");
   var window = require("window");
   var currReq;
 
@@ -402,7 +416,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
   var $ = require("jQuery");
   var cache = require("cache");
   var dateUtils = require("date-utils");
-  var bugzilla = require("app/bugzilla-auth").Bugzilla;
+  var bugzilla = require("bugzilla");
   var window = require("window");
   var xhrQueue = require("xhr/queue").create();
 

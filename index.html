@@ -150,17 +150,17 @@ $(window).ready(function() {
     moduleScripts.push("js/modules/" + name + ".js");
   });
 
-  var customModuleExports = {
-    jQuery: jQuery,
-    bugzilla: Bugzilla,
-    window: window
-  };
-
   Require.preload(document, moduleScripts, function whenLoaded() {
     $("#loading-screen").hide();
     $(".hide-while-loading").show();
-    var require = Require.build(Require.modules, customModuleExports);
-    require("app/ui").init(document);
+
+    var moduleExports = {};
+    var require = Require.build(Require.modules, moduleExports);
+    require("app/loader").init(moduleExports, {
+      jQuery: jQuery,
+      Bugzilla: Bugzilla,
+      window: window
+   });
   });
 });
 </script>
