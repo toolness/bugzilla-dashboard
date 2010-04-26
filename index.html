@@ -19,10 +19,11 @@
         class="requires-login"><span>Change User</span></li>
     <li data-command="refresh-dashboard"
         class="requires-login"><span>Refresh</span></li>
+    <li data-dialog="repair"><span>Repair</span></li>
     <li data-dialog="find-user"
         class="requires-auth-login"><span>Find A User</span></li>
     <li data-dialog="file-bug"><span>File A Bug</span></li>
-  </ul>
+ </ul>
 </div>
 <div id="loading-screen" class="loading">&nbsp;</div>
 <div id="reports" class="requires-login hide-while-loading">
@@ -59,17 +60,29 @@
 <div id="file-bug" class="dialog">
   <div class="content">
   <form id="file-bug">
-  <p>Just type in part of a product or component below, select from
+  <p>Type in part of a product or component below, select from
   the auto-complete list, and press enter. You'll then get sent to a
   Bugzilla page where you can fill out a summary, description, and
   more details for the bug.</p>
   <table>
     <tr>
       <td>Category</td>
-      <td><input type="text" id="category"/></td>
+      <td><input type="text" class="category" id="file-bug-category"/></td>
     </tr>
   </table>
   </form>
+  </div>
+</div>
+<div id="repair" class="dialog">
+  <div class="content">
+  <form id="repair-form">
+  <p>If this page isn't working as you expect, enter the
+  text &ldquo;repair my dashboard&rdquo; below and
+  press enter. Hopefully that will fix things.</p>
+  <br/>
+  <input type="text" class="phrase" id="repair-phrase"/>
+  </form>
+  <div class="result"></div>
   </div>
 </div>
 <div id="find-user" class="dialog">
@@ -90,6 +103,9 @@
   </div>
 </div>
 <div id="templates">
+  <div class="repair-success">Done. Try reloading this page and see
+  if your problem is fixed.</div>
+  <div class="repair-failure">Hey, that wasn't the right text.</div>
   <div class="more-link"><span class="number"></span> more&hellip;</div>
   <div class="bug-tooltip">
     <div>

@@ -173,14 +173,34 @@ Require.modules["app/ui/file-bug"] = function(exports, require) {
     }
   };
 
-  $("input#category").autocomplete(categoryOptions);
+  $("#file-bug .category").autocomplete(categoryOptions);
   $("#file-bug").submit(
     function(event) {
       event.preventDefault();
-      var parts = $("input#category").val().split(EM_DASH);
+      var parts = $("#file-bug .category").val().split(EM_DASH);
       window.open(bugzilla.BASE_UI_URL + "/enter_bug.cgi?" +
                   "product=" + escape(parts[0]) + "&" +
                   "component=" + escape(parts[1]));
+    });
+
+  exports.init = function init() {
+  };
+};
+
+Require.modules["app/ui/repair"] = function(exports, require) {
+  var $ = require("jQuery");
+
+  $("#repair form").submit(
+    function() {
+      var phrase = $("#repair .phrase").val();
+      var response;
+      if (phrase == "repair my dashboard") {
+        require("cache").clear();
+        response = $("#templates .repair-success").clone();
+      } else
+        response = $("#templates .repair-failure").clone();
+      $("#repair .result").empty().append(response);
+      $("#repair .result").hide().slideDown();
     });
 
   exports.init = function init() {
@@ -318,6 +338,7 @@ Require.modules["app/ui"] = function(exports, require) {
   exports.init = function init(document) {
     setupDocumentTitleChanger(document);
 
+    require("app/ui/repair").init();
     require("app/ui/dashboard").init();
     require("app/ui/login-form").init();
     require("app/ui/find-user").init();
