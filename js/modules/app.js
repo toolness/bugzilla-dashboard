@@ -420,45 +420,68 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
   window.setInterval(function() { updatePrettyDates($("#reports")); },
                      PRETTY_DATE_UPDATE_INTERVAL);
 
+  const BUGS_TO_SHOW = 10;
+
   function showBugs(query, bugs) {
     var table = $("#templates .bugs").clone();
     var rowTemplate = table.find(".bug-row").remove();
+
+    function appendRowForBug(bug) {
+      var row = rowTemplate.clone();
+      row.attr("id", "bug-id-" + bug.id);
+      row.find(".summary").text(bug.summary);
+      row.addClass("status-" + bug.status);
+      if (bug.priority != "--") {
+        row.addClass(bug.priority);
+        row.addClass(bug.severity);
+      }
+      row.find(".last-changed").attr("data-last-change",
+                                     bug.last_change_time);
+
+      row.click(
+        function onClick() {
+          window.open(bugzilla.getShowBugURL(bug.id));
+        });
+
+      row.hover(
+        function onIn() {
+          var tooltip = $("#templates .bug-tooltip").clone();
+          tooltip.find(".priority").text(bug.priority);
+          // TODO: Show more information in tooltip.
+          $(this).append(tooltip);
+        },
+        function onOut() {
+          $(this).find(".bug-tooltip").remove();
+        });
+      
+      table.append(row);
+    }
+
     sortByLastChanged(bugs);
     bugs.reverse();
-    bugs.forEach(
-      function(bug) {
-        var row = rowTemplate.clone();
-        row.attr("id", "bug-id-" + bug.id);
-        row.find(".summary").text(bug.summary);
-        row.addClass("status-" + bug.status);
-        if (bug.priority != "--") {
-          row.addClass(bug.priority);
-          row.addClass(bug.severity);
-        }
-        row.find(".last-changed").attr("data-last-change",
-                                       bug.last_change_time);
 
-        row.click(
-          function onClick() {
-            window.open(bugzilla.getShowBugURL(bug.id));
-          });
+    var extraBugs = bugs.slice(BUGS_TO_SHOW);
+    bugs = bugs.slice(0, BUGS_TO_SHOW);
 
-        row.hover(
-          function onIn() {
-            var tooltip = $("#templates .bug-tooltip").clone();
-            tooltip.find(".priority").text(bug.priority);
-            // TODO: Show more information in tooltip.
-            $(this).append(tooltip);
-          },
-          function onOut() {
-            $(this).find(".bug-tooltip").remove();
-          });
+    bugs.forEach(appendRowForBug);
 
-        table.append(row);
-      });
     updatePrettyDates(table);
     query.find(".bugs").remove();
+    query.find(".more-link").remove();
     query.append(table);
+
+    if (extraBugs.length) {
+      var moreLink = $("#templates .more-link").clone();
+      moreLink.click(
+        function() {
+          moreLink.remove();
+          extraBugs.forEach(appendRowForBug);
+          updatePrettyDates(table);
+          removeDuplicateBugs();
+        });
+      query.append(moreLink);
+    }
+
     table.hide();
     removeDuplicateBugs();
     table.fadeIn();
