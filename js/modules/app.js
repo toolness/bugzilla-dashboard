@@ -472,6 +472,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
 
     if (extraBugs.length) {
       var moreLink = $("#templates .more-link").clone();
+      moreLink.find(".number").text(extraBugs.length);
       moreLink.click(
         function() {
           moreLink.remove();
