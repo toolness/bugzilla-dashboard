@@ -42,7 +42,50 @@ Require.modules["app/login"] = function(exports) {
   };
 };
 
+Require.modules["app/bugzilla-serial"] = function(exports, require) {
+  const EVENTS = ["abort", "error", "load"];
+
+  var myproto = require("bugzilla");
+  var active = null;
+  var queue = [];
+
+  function enqueue(bugzilla, options) {
+    queue.push({bugzilla: bugzilla, options: options});
+    if (!active)
+      activateNextInQueue();
+  }
+
+  function activateNextInQueue() {
+    if (queue.length) {
+      var entry = queue.splice(0, 1)[0];
+      var xhr = myproto.ajax.call(entry.bugzilla, entry.options);
+      EVENTS.forEach(function(name) {
+        xhr.addEventListener(name, onDone, false);
+      });
+      active = xhr;
+    } else
+      active = null;
+  }
+
+  function onDone(event) {
+    var xhr = event.target;
+    EVENTS.forEach(function(name) {
+      xhr.removeEventListener(name, onDone, false);
+    });
+    activateNextInQueue();
+  };
+
+  exports.Bugzilla = {
+    ajax: function ajax(options) {
+      enqueue(this, options);
+    },
+    __proto__: myproto
+  };
+};
+
 Require.modules["app/bugzilla-auth"] = function(exports, require) {
+  var myproto = require("app/bugzilla-serial").Bugzilla;
+
   exports.Bugzilla = {
     ajax: function ajax(options) {
       var user = require("app/login").get();
@@ -54,9 +97,9 @@ Require.modules["app/bugzilla-auth"] = function(exports, require) {
         options.data.password = user.password;
       }
 
-      return this.__proto__.ajax.call(this, options);
+      return myproto.ajax.call(this, options);
     },
-    __proto__: require("bugzilla")
+    __proto__: myproto
   };
 };
 
@@ -512,24 +555,15 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
   };
 
   function update(myUsername) {
+    report("#code-reviews", myUsername,
+           {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+            flag_DOT_requestee: myUsername});
+
     report("#assigned-bugs", myUsername,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1});
-
-    report("#fixed-bugs", myUsername,
-           {resolution: ["FIXED"],
-            changed_after: timeAgo(MS_PER_WEEK),
-            email1: myUsername,
-            email1_type: "equals",
-            email1_assigned_to: 1,
-            email1_reporter: 1,
-            email1_cc: 1});
-
-    report("#code-reviews", myUsername,
-           {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            flag_DOT_requestee: myUsername});
 
     report("#reported-bugs", myUsername,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
@@ -549,6 +583,15 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_type: "not_equals",
             email2_assigned_to: 1,
             email2_reporter: 1});
+
+    report("#fixed-bugs", myUsername,
+           {resolution: ["FIXED"],
+            changed_after: timeAgo(MS_PER_WEEK),
+            email1: myUsername,
+            email1_type: "equals",
+            email1_assigned_to: 1,
+            email1_reporter: 1,
+            email1_cc: 1});
   };
 
   var refreshCommand = {
