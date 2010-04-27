@@ -81,11 +81,6 @@ Require.modules["errors"] = function(exports, require) {
 };
 
 Require.modules["app/bugzilla-auth"] = function(exports, require) {
-  function onLoad(event) {
-    var xhr = event.target;
-    console.log("load", xhr);
-  }
-
   function onError(event) {
     var xhr = event.target;
     require("errors").log("bugzilla-api-error");
@@ -105,7 +100,6 @@ Require.modules["app/bugzilla-auth"] = function(exports, require) {
 
         var xhr = Bugzilla.ajax.call(this, options);
 
-        xhr.addEventListener("load", onLoad, false);
         xhr.addEventListener("error", onError, false);
 
         return xhr;
@@ -622,20 +616,22 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     changed_after: timeAgo(MS_PER_WEEK * 14)
   };
 
-  function update(myUsername, forceUpdate) {
+  function update(myUsername, isAuthenticated, forceUpdate) {
     xhrQueue.clear();
 
-    report("#code-reviews", myUsername, forceUpdate,
+    var key = myUsername + "_" + (isAuthenticated ? "PRIVATE" : "PUBLIC");
+
+    report("#code-reviews", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             flag_DOT_requestee: myUsername});
 
-    report("#assigned-bugs", myUsername, forceUpdate,
+    report("#assigned-bugs", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1});
 
-    report("#reported-bugs", myUsername, forceUpdate,
+    report("#reported-bugs", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
@@ -644,7 +640,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_type: "not_equals",
             email2_assigned_to: 1});
 
-    report("#cc-bugs", myUsername, forceUpdate,
+    report("#cc-bugs", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
@@ -654,7 +650,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_assigned_to: 1,
             email2_reporter: 1});
 
-    report("#fixed-bugs", myUsername, forceUpdate,
+    report("#fixed-bugs", key, forceUpdate,
            {resolution: ["FIXED"],
             changed_after: timeAgo(MS_PER_WEEK),
             email1: myUsername,
@@ -669,7 +665,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     execute: function execute() {
       var user = require("app/login").get();
       if (user.isLoggedIn)
-        update(user.username, true);
+        update(user.username, user.isAuthenticated, true);
     }
   };
 
@@ -678,7 +674,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     require("app/login").whenChanged(
       function changeSearchCriteria(user) {
         if (user.isLoggedIn) {
-          update(user.username, false);
+          update(user.username, user.isAuthenticated, false);
         }
       });
   };
