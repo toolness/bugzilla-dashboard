@@ -54,7 +54,43 @@ Require.modules["app/login"] = function(exports) {
   };
 };
 
+Require.modules["errors"] = function(exports, require) {
+  var $ = require("jQuery");
+
+  var errors = $("#errors");
+  var messages = $("#templates .errors");
+  var lastError = null;
+
+  exports.log = function log(name) {
+    var message = messages.find("." + name);
+    if (!message.length) {
+      exports.log("unknown-error");
+      return;
+    }
+    if (lastError == message.get(0))
+      return;
+    lastError = message.get(0);
+
+    message = message.clone();
+    errors.append(message);
+    if (errors.children().length == 1)
+      errors.fadeIn();
+    else
+      message.fadeIn();
+  };
+};
+
 Require.modules["app/bugzilla-auth"] = function(exports, require) {
+  function onLoad(event) {
+    var xhr = event.target;
+    console.log("load", xhr);
+  }
+
+  function onError(event) {
+    var xhr = event.target;
+    require("errors").log("bugzilla-api-error");
+  }
+
   exports.create = function(Bugzilla) {
     function AuthenticatedBugzilla() {
       this.ajax = function ajax(options) {
@@ -67,7 +103,12 @@ Require.modules["app/bugzilla-auth"] = function(exports, require) {
           options.data.password = user.password;
         }
 
-        return Bugzilla.ajax.call(this, options);
+        var xhr = Bugzilla.ajax.call(this, options);
+
+        xhr.addEventListener("load", onLoad, false);
+        xhr.addEventListener("error", onError, false);
+
+        return xhr;
       };
     }
 

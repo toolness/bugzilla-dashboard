@@ -44,11 +44,11 @@
   page's awesome functionality.</p>
   <table>
     <tr>
-      <td>Username</td>
+      <td>Bugzilla Username</td>
       <td><input type="text" class="username" id="login-username"/></td>
     </tr>
     <tr>
-      <td>Password</td>
+      <td>Bugzilla Password</td>
       <td><input type="password" class="password" id="login-password"/></td>
     </tr>
   </table>
@@ -102,7 +102,14 @@
   </form>
   </div>
 </div>
+<div id="errors"></div>
 <div id="templates">
+  <div class="errors">
+    <div class="bugzilla-api-error">I had trouble talking to Bugzilla.
+    Perhaps you entered the wrong username/password, or I
+    messed up.</div>
+    <div class="unknown-error">An unknown error occurred.</div>
+ </div>
   <div class="repair-success">Done. Try reloading this page and see
   if your problem is fixed.</div>
   <div class="repair-failure">Hey, that wasn't the right text.</div>
