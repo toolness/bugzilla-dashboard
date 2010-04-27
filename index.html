@@ -139,9 +139,7 @@
 </body>
 <!-- Base Scripts -->
 <script src="js/jquery.js"></script>
-<script src="js/jquery-ui.js"></script>
 <script src="js/require.js"></script>
-<script src="js/bugzilla.js"></script>
 <script>
 $(window).ready(function() {
   var moduleScriptNames = [
@@ -151,16 +149,19 @@ $(window).ready(function() {
     "xhr"
   ];
 
-  var moduleScripts = [];
+  var scripts = [
+    "js/jquery-ui.js",
+    "js/bugzilla.js"
+  ];
 
   moduleScriptNames.forEach(function(name) {
-    moduleScripts.push("js/modules/" + name + ".js");
+    scripts.push("js/modules/" + name + ".js");
   });
 
   if (!('JSON' in window))
-    moduleScripts.push("js/json2.js");
+    scripts.push("js/json2.js");
 
-  Require.preload(document, moduleScripts, function whenLoaded() {
+  Require.preload(document, scripts, function whenLoaded() {
     $("#loading-screen").hide();
     $(".hide-while-loading").show();
 
