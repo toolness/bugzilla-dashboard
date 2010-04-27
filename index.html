@@ -165,13 +165,20 @@ $(window).ready(function() {
     $("#loading-screen").hide();
     $(".hide-while-loading").show();
 
-    var moduleExports = {};
-    var require = Require.build(Require.modules, moduleExports);
-    require("app/loader").init(moduleExports, {
+    var options = {
       jQuery: jQuery,
       Bugzilla: Bugzilla,
       window: window
-   });
+    };
+
+    if (document.location.search == "?testing=1") {
+      window.parent.onDashboardLoaded(window, options);
+      return;
+    }
+
+    var moduleExports = {};
+    var require = Require.build(Require.modules, moduleExports);
+    require("app/loader").init(moduleExports, options);
   });
 });
 </script>

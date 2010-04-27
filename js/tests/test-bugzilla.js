@@ -12,7 +12,7 @@ function testBugzillaAjax() {
 
   expect(expected.length);
 
-  var xhr = require("mocks").xhr(
+  var xhr = require("mocks/xhr").create(
     function xhrDelegate(methodName, args) {
       var jsonableArgs = [];
       args.forEach(
@@ -20,7 +20,6 @@ function testBugzillaAjax() {
           if (typeof(arg) != "function")
             jsonableArgs.push(arg);
         });
-      ;
       same([methodName, jsonableArgs], expected.splice(0, 1)[0]);
     });
 

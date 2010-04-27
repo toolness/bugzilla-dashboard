@@ -1,4 +1,49 @@
-Require.modules["mocks"] = function(exports, require) {
+Require.modules["mocks/cache"] = function(exports, require) {
+  function copy(obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  function MockCache() {
+    this.cache = {};
+  };
+
+  MockCache.prototype = {
+    get: function get(key) {
+      console.log("cache get", key);
+      if (key in this.cache)
+        return copy(this.cache[key]);
+      return null;
+    },
+    set: function set(key, value) {
+      console.log("cache set", key);
+      this.cache[key] = copy(value);
+    },
+    clear: function clear(key, value) {
+      this.cache = {};
+    }
+  };
+
+  exports.create = function create() {
+    return new MockCache();
+  };
+};
+
+Require.modules["mocks/bugzilla"] = function(exports, require) {
+  exports.create = function create(Bugzilla) {
+    function MockBugzilla() {
+      this.ajax = function ajax(options) {
+        console.log(options);
+        throw new Error("MockBugzilla.ajax() not implemented");
+      };
+    };
+
+    MockBugzilla.prototype = Bugzilla;
+
+    return new MockBugzilla();
+  };
+};
+
+Require.modules["mocks/xhr"] = function(exports, require) {
   function MockXMLHttpRequest(delegate) {
     var self = this;
 
@@ -50,7 +95,7 @@ Require.modules["mocks"] = function(exports, require) {
     };
   }
 
-  exports.xhr = function xhr(delegate) {
+  exports.create = function create(delegate) {
     return new MockXMLHttpRequest(delegate);
   };
 };

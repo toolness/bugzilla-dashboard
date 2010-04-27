@@ -1,9 +1,14 @@
 Require.modules["app/loader"] = function(exports, require) {
   exports.init = function init(moduleExports, options) {
-    var cache = require("cache/html5").create(
-      "bugzilla-dashboard-cache",
-      options.window.sessionStorage
-    );
+    var cache;
+    if ("cache" in options)
+      cache = options.cache;
+    else 
+      cache = require("cache/html5").create(
+        "bugzilla-dashboard-cache",
+        options.window.sessionStorage
+      );
+
     var bugzilla = require("app/bugzilla-auth").create(options.Bugzilla);
 
     moduleExports.bugzilla = bugzilla;
@@ -615,18 +620,12 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
       });
   }
 
-  function timeAgo(ms) {
-    var now = new Date();
-    var then = new Date(now - ms);
-    return dateUtils.dateToISO8601(then);
-  }
-
   const MS_PER_HOUR = 1000 * 60 * 60;
   const MS_PER_DAY =  MS_PER_HOUR * 24;
   const MS_PER_WEEK = MS_PER_DAY * 7;
 
   var defaults = {
-    changed_after: timeAgo(MS_PER_WEEK * 14)
+    changed_after: dateUtils.timeAgo(MS_PER_WEEK * 14)
   };
 
   function update(myUsername, isAuthenticated, forceUpdate) {
@@ -665,7 +664,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
 
     report("#fixed-bugs", key, forceUpdate,
            {resolution: ["FIXED"],
-            changed_after: timeAgo(MS_PER_WEEK),
+            changed_after: dateUtils.timeAgo(MS_PER_WEEK),
             email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1,

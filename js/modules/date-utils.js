@@ -1,4 +1,9 @@
 Require.modules["date-utils"] = function(exports) {
+  // Dynamically replace this when QA testing, for determinism.
+  exports.now = function now() {
+    return new Date();
+  };
+
   // Taken from MDC @ Core_JavaScript_1.5_Reference/Objects/Date.
   exports.dateToISO8601 = function dateToISO8601(d) {
     function pad(n) { return n < 10 ? '0' + n : n; }
@@ -48,7 +53,7 @@ Require.modules["date-utils"] = function(exports) {
   // long ago the date represents.
   exports.prettyDate = function prettyDate(time, now){
     if (!now)
-      now = (new Date()).getTime();
+      now = exports.now().getTime();
 
     var date = exports.dateFromISO8601(time),
     diff = ((now - date.getTime()) / 1000),
@@ -67,5 +72,10 @@ Require.modules["date-utils"] = function(exports) {
       day_diff == 1 && "Yesterday" ||
       day_diff < 7 && day_diff + " days ago" ||
       day_diff < 31 && Math.ceil( day_diff / 7 ) + " weeks ago";
+  };
+
+  exports.timeAgo = function timeAgo(ms) {
+    var then = new Date(exports.now() - ms);
+    return exports.dateToISO8601(then);
   };
 };
