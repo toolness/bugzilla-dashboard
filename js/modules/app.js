@@ -54,7 +54,7 @@ Require.modules["app/login"] = function(exports) {
   };
 };
 
-Require.modules["errors"] = function(exports, require) {
+Require.modules["app/errors"] = function(exports, require) {
   var $ = require("jQuery");
 
   var errors = $("#errors");
@@ -83,7 +83,7 @@ Require.modules["errors"] = function(exports, require) {
 Require.modules["app/bugzilla-auth"] = function(exports, require) {
   function onError(event) {
     var xhr = event.target;
-    require("errors").log("bugzilla-api-error");
+    require("app/errors").log("bugzilla-api-error");
   }
 
   exports.create = function(Bugzilla) {
