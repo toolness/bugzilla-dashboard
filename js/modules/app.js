@@ -91,6 +91,13 @@ Require.modules["app/bugzilla-auth"] = function(exports, require) {
     require("app/errors").log("bugzilla-api-error");
   }
 
+  function onLoad(event) {
+    var xhr = event.target;
+    var response = JSON.parse(xhr.responseText);
+    if (response.error)
+      require("app/errors").log("bugzilla-api-error");
+  }
+
   exports.create = function(Bugzilla) {
     function AuthenticatedBugzilla() {
       this.ajax = function ajax(options) {
@@ -105,6 +112,7 @@ Require.modules["app/bugzilla-auth"] = function(exports, require) {
 
         var xhr = Bugzilla.ajax.call(this, options);
 
+        xhr.addEventListener("load", onLoad, false);
         xhr.addEventListener("error", onError, false);
 
         return xhr;
