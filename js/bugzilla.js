@@ -27,7 +27,11 @@ var Bugzilla = {
     options = newOptions;
 
     function onLoad() {
-      options.success(JSON.parse(xhr.responseText));
+      var response = JSON.parse(xhr.responseText);
+      if (!response.error)
+        options.success(response);
+      // TODO: We should really call some kind of error callback
+      // if this didn't work.
     }
 
     var xhr = options.xhr ? options.xhr : new XMLHttpRequest();
