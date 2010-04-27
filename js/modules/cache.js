@@ -1,33 +1,34 @@
-Require.modules["cache"] = function(exports, require) {
-  const CACHE_NAME = "cache";
+Require.modules["cache/html5"] = function(exports, require) {
+  exports.create = function create(name, storage) {
+    var cache = storage.getItem(name);
 
-  var storage = require("storage");
-  var cache = storage.getItem(CACHE_NAME);
+    if (cache)
+      cache = JSON.parse(cache);
+    else
+      cache = {};
 
-  if (cache)
-    cache = JSON.parse(cache);
-  else
-    cache = {};
+    return {
+      set: function set(key, value) {
+        cache[key] = value;
 
-  exports.set = function set(key, value) {
-    cache[key] = value;
+        // Remove the key first, to get around a strange iPad
+        // issue: http://stackoverflow.com/questions/2603682/is-anyone-else-receiving-a-quota-exceeded-err-on-their-ipad-when-accessing-locals
+        storage.removeItem(name);
 
-    // Remove the key first, to get around a strange iPad
-    // issue: http://stackoverflow.com/questions/2603682/is-anyone-else-receiving-a-quota-exceeded-err-on-their-ipad-when-accessing-locals
-    storage.removeItem(CACHE_NAME);
+        // TODO: We should really catch QUOTA_EXCEEDED_ERR here,
+        // which could be thrown if the user is in private
+        // browsing mode.
+        storage.setItem(name, JSON.stringify(cache));
+      },
 
-    // TODO: We should really catch QUOTA_EXCEEDED_ERR here,
-    // which could be thrown if the user is in private
-    // browsing mode.
-    storage.setItem(CACHE_NAME, JSON.stringify(cache));
-  };
+      get: function get(key) {
+        return cache[key];
+      },
 
-  exports.get = function get(key) {
-    return cache[key];
-  };
-
-  exports.clear = function clear() {
-    storage.removeItem(CACHE_NAME);
-    cache = {};
+      clear: function clear() {
+        storage.removeItem(name);
+        cache = {};
+      }
+    };
   };
 };

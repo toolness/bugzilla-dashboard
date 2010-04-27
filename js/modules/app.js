@@ -1,9 +1,14 @@
 Require.modules["app/loader"] = function(exports, require) {
   exports.init = function init(moduleExports, options) {
+    var cache = require("cache/html5").create(
+      "bugzilla-dashboard-cache",
+      options.window.sessionStorage
+    );
     var bugzilla = require("app/bugzilla-auth").create(options.Bugzilla);
+
     moduleExports.bugzilla = bugzilla;
+    moduleExports.cache = cache;
     moduleExports.window = options.window;
-    moduleExports.storage = options.window.sessionStorage;
     moduleExports.jQuery = options.jQuery;
 
     require("app/ui").init(options.window.document);
