@@ -33,6 +33,7 @@ a {
 
 .running:after {
     content: " (now running)";
+    color: yellow;
 }
 
 span.test-button:hover {
