@@ -5,6 +5,11 @@ body {
     font-size: 9pt;
 }
 
+a {
+    color: white;
+    text-decoration: underline;
+}
+
 #dashboard-container {
     float: left;
 }
