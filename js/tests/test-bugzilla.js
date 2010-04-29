@@ -2,12 +2,12 @@ function testBugzillaAjax() {
   var require = Require.build();
   var actual = [];
   var expected = [
-    ["open",["GET",
-             "https://api-dev.bugzilla.mozilla.org/latest/configuration"]],
-    ["setRequestHeader",["Accept","application/json"]],
-    ["setRequestHeader",["Content-Type","application/json"]],
-    ["addEventListener",["load",false]],
-    ["send",[null]]
+    ["xhr.open",["GET",
+                 "https://api-dev.bugzilla.mozilla.org/latest/configuration"]],
+    ["xhr.setRequestHeader",["Accept","application/json"]],
+    ["xhr.setRequestHeader",["Content-Type","application/json"]],
+    ["xhr.addEventListener",["load",false]],
+    ["xhr.send",[null]]
   ];
 
   expect(expected.length);

@@ -14,17 +14,17 @@ Require.modules["mocks/cache"] = function(exports, require) {
 
   MockCache.prototype = {
     get: function get(key) {
-      this.delegate("get", [key]);
+      this.delegate("cache.get", [key]);
       if (key in this.cache)
         return copy(this.cache[key]);
       return null;
     },
     set: function set(key, value) {
-      this.delegate("set", [key, value]);
+      this.delegate("cache.set", [key, value]);
       this.cache[key] = copy(value);
     },
     clear: function clear() {
-      this.delegate("clear", []);
+      this.delegate("cache.clear", []);
       this.cache = {};
     }
   };
@@ -104,11 +104,7 @@ Require.modules["mocks/bugzilla"] = function(exports, require) {
     if (time === undefined)
       time = DEFAULT_RESPONSE_TIME;
 
-    function xhrDelegate(method, args) {
-      delegate("xhr." + method, args);
-    }
-
-    var req = require("mocks/xhr").create(xhrDelegate);
+    var req = require("mocks/xhr").create(delegate);
 
     require("window").setTimeout(
       function() {
@@ -125,6 +121,7 @@ Require.modules["mocks/bugzilla"] = function(exports, require) {
   exports.create = function create(Bugzilla, ajaxImpl, delegate) {
     function MockBugzilla() {
       this.ajax = function ajax(options) {
+        delegate("bugzilla.ajax", options);
         var obj = ajaxImpl(options, exports);
         var req = response(delegate, obj);
         req.addEventListener(
@@ -165,7 +162,7 @@ Require.modules["mocks/xhr"] = function(exports, require) {
     self.addEventListener = function(eventType, handler, useCapture) {
       verifyEventType(eventType);
       listeners[eventType].push(handler);
-      delegate("addEventListener", [eventType, handler, useCapture]);
+      delegate("xhr.addEventListener", [eventType, handler, useCapture]);
     };
 
     self.removeEventListener = function(eventType, handler, useCapture) {
@@ -174,19 +171,19 @@ Require.modules["mocks/xhr"] = function(exports, require) {
       if (index == -1)
         throw new Error("handler not registered for event: " + eventType);
       listeners[eventType].splice(index, 1);
-      delegate("removeEventListener", [eventType, handler, useCapture]);
+      delegate("xhr.removeEventListener", [eventType, handler, useCapture]);
     };
 
     self.setRequestHeader = function(header, value) {
-      delegate("setRequestHeader", [header, value]);
+      delegate("xhr.setRequestHeader", [header, value]);
     };
 
     self.send = function(data) {
-      delegate("send", [data]);
+      delegate("xhr.send", [data]);
     };
 
     self.open = function open(method, url) {
-      delegate("open", [method, url]);
+      delegate("xhr.open", [method, url]);
     };
 
     self.mockTriggerEvent = function(event) {
