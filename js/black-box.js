@@ -84,6 +84,9 @@ function onDashboardLoaded(dashboard, options) {
     //console.log(method, args);
   }
 
+  // Get rid of any form values cached by the browser.
+  options.jQuery("input[type=text], input[type=password]").val("");
+
   var ajaxImpl = require("mocks/bugzilla/trivial").makeAjaxImpl();
   options.cache = require("mocks/cache").create(delegate);
   options.Bugzilla = require("mocks/bugzilla").create(options.Bugzilla,
