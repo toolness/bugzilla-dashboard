@@ -1,0 +1,35 @@
+body {
+    background: black;
+    color: white;
+    font-family: Monaco, monospace;
+    font-size: 9pt;
+}
+
+#dashboard-container {
+    float: left;
+}
+
+#dashboard {
+    width: 640px;
+    height: 480px;
+    border: none;
+    margin-right: 1em;
+}
+
+.test-button:before {
+    content: "Test ";
+}
+
+.test-button {
+    display: block;
+    margin: 1em;
+    cursor: pointer;
+}
+
+.running:after {
+    content: " (now running)";
+}
+
+span.test-button:hover {
+    background: #404040;
+}

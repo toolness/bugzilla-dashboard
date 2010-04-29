@@ -1,14 +1,33 @@
 <html>
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
- <title>Bugzilla Dashboard - Black Box</title>
+  <link rel="stylesheet" type="text/css" media="all"
+        href="css/black-box.css" />
+  <title>Bugzilla Dashboard - Black Box</title>
 </head>
-<body style="background: black; color: white;">
+<body>
 <h1 class="title">Bugzilla Dashboard - Black Box</h1>
-<div style="text-align: center;">
-<iframe src="about:blank" id="dashboard"
-        style="width: 640px; height: 480px; border: none;"></iframe>
+<p>
+  This page contains a Bugzilla Dashboard plugged-in to a
+  toy Bugzilla database. You can log into it with the
+  username "john@doe.com" and password "test".
+</p>
+<p>
+  You can also click on a test that automates some
+  common UI actions for you.
+</p>
+<div id="dashboard-container">
+<iframe src="about:blank" id="dashboard"></iframe>
 </div>
+<span class="test-button" id="testLoginWithNoPassword">
+  Login without Password
+</span>
+<span class="test-button" id="testLoginWithCorrectPassword">
+  Login with Correct Password
+</span>
+<span class="test-button" id="testLoginWithIncorrectPassword">
+  Login with Incorrect Password
+</span>
 </body>
 <!-- Base Scripts -->
 <script src="js/jquery.js"></script>
