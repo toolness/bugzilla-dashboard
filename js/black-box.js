@@ -62,44 +62,52 @@ function resetDashboard(delegate) {
   iframe.src = "index.html?testing=1";
 }
 
+function initialize() {
+  $(".test-button").click(
+    function() {
+      var testButton = this;
+      var testFunc = window[testButton.id];
+      var cmds = [];
+      const COMMAND_DELAY = 500;
+
+      function queueNextCommand() {
+        if (cmds.length)
+          window.setTimeout(nextCommand, COMMAND_DELAY);
+        else {
+          $(testButton).removeClass("running");
+        }
+      }
+
+      function nextCommand() {
+        var cmd = cmds.shift();
+        cmd();
+        queueNextCommand();
+      }
+
+      $(testButton).addClass("running");
+      
+      resetDashboard(
+        function(method, args) {
+          switch (method) {
+          case "blackBox.onDashboardLoaded":
+            var dashboard = args[0];
+            var options = args[1];
+            cmds = testFunc(options.jQuery);
+            break;
+          case "blackBox.afterInit":
+            queueNextCommand();
+            break;
+          }
+        });
+    });
+
+  resetDashboard(function() {});
+}
+
 $(window).ready(
   function() {
-    $(".test-button").click(
-      function() {
-        var testButton = this;
-        var testFunc = window[testButton.id];
-        var cmds = [];
-        const COMMAND_DELAY = 500;
-
-        function queueNextCommand() {
-          if (cmds.length)
-            window.setTimeout(nextCommand, COMMAND_DELAY);
-          else {
-            $(testButton).removeClass("running");
-          }
-        }
-
-        function nextCommand() {
-          var cmd = cmds.shift();
-          cmd();
-          queueNextCommand();
-        }
-
-        $(testButton).addClass("running");
-
-        resetDashboard(
-          function(method, args) {
-            switch (method) {
-            case "blackBox.onDashboardLoaded":
-              var dashboard = args[0];
-              var options = args[1];
-              cmds = testFunc(options.jQuery);
-              break;
-            case "blackBox.afterInit":
-              queueNextCommand();
-              break;
-            }
-          });
-      });
-    resetDashboard(function() {});
+    if (!('JSON' in window))
+      Require.preload(document, ["js/json2.js"], initialize);
+    else
+      initialize();
   });
