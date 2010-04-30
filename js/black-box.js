@@ -75,8 +75,7 @@ function setDashboardLoaded(delegate, window) {
   window.onDashboardLoaded = function onDashboardLoaded(dashboard, options) {
     $(dashboard).error(
       function(event) {
-        if (window.console)
-          window.console.warn("An error occurred in the dashboard iframe.");
+        addFailMsg("An error occurred in the dashboard iframe.");
       });
 
     delegate("blackBox.onDashboardLoaded", [dashboard, options]);
@@ -111,6 +110,13 @@ function resetDashboard(delegate) {
   iframe.src = "index.html?testing=1";
 }
 
+function addFailMsg(msg) {
+  var msgElem = $('<p class="fail"></p>').text(msg);
+  msgElem.hide();
+  $("#messages").append(msgElem);
+  msgElem.slideDown();
+}
+
 function initialize() {
   $(".test-button").click(
     function() {
@@ -121,12 +127,8 @@ function initialize() {
       $(testButton).addClass("running");
       function onFail(reason) {
         $(testButton).addClass("fail");
-        var msg = ("Failure in " + $(testButton).text() + ": " + 
+        addFailMsg("Failure in " + $(testButton).text() + ": " + 
                    reason);
-        var msgElem = $('<p class="fail"></p>').text(msg);
-        msgElem.hide();
-        $("#messages").append(msgElem);
-        msgElem.slideDown();
       }
       function onDone() {
         $(testButton).removeClass("running");
