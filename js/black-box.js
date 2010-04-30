@@ -1,25 +1,58 @@
-function testLoginWithCorrectPassword($) {
-  return [
-    function() { $("#login .username").val("john@doe.com");
-                 $("#login .password").val("test"); },
-    function() { $("#login form").submit(); }
-  ];
+function Automator(window, jQuery, onDone) {
+  this.jQuery = jQuery;
+  this.onDone = onDone;
+  this.queue = [];
+  this.window = window;
 }
 
-function testLoginWithNoPassword($) {
-  return [
-    function() { $("#login .username").val("john@doe.com");
-                 $("#login .password").val(""); },
-    function() { $("#login form").submit(); }
-  ];
+Automator.prototype = {
+  COMMAND_DELAY: 500,
+  queueNextCommand: function queueNextCommand() {
+    var self = this;
+    function nextCommand() {
+      var cmd = self.queue.shift();
+      cmd.call(self);
+      self.queueNextCommand();
+    }
+
+    if (this.queue.length)
+      this.window.setTimeout(nextCommand, this.COMMAND_DELAY);
+    else
+      this.onDone();
+  },
+  _$: function _$(sel) {
+    var query = this.jQuery(sel);
+    if (query.length == 0)
+      throw new Error("selector yields no results: " + sel);
+    if (query.length > 1)
+      throw new Error("selector yields " + query.length +
+                      " results instead of 1: " + sel);
+    return query;
+  },
+  type: function type(field, value) {
+    this.queue.push(function() { this._$(field).val(value); });
+  },
+  submit: function submit(form) {
+    this.queue.push(function() { this._$(form).submit(); });
+  }
+};
+
+function testLoginWithCorrectPassword(auto) {
+  auto.type("#login .username", "john@doe.com");
+  auto.type("#login .password", "test");
+  auto.submit("#login form");
 }
 
-function testLoginWithIncorrectPassword($) {
-  return [
-    function() { $("#login .username").val("john@doe.com");
-                 $("#login .password").val("wrong"); },
-    function() { $("#login form").submit(); }
-  ];
+function testLoginWithNoPassword(auto) {
+  auto.type("#login .username", "john@doe.com");
+  auto.type("#login .password", "");
+  auto.submit("#login form");  
+}
+
+function testLoginWithIncorrectPassword(auto) {
+  auto.type("#login .username", "john@doe.com");
+  auto.type("#login .password", "u");
+  auto.submit("#login form");
 }
 
 function setDashboardLoaded(delegate, window) {
@@ -67,35 +100,24 @@ function initialize() {
     function() {
       var testButton = this;
       var testFunc = window[testButton.id];
-      var cmds = [];
-      const COMMAND_DELAY = 500;
-
-      function queueNextCommand() {
-        if (cmds.length)
-          window.setTimeout(nextCommand, COMMAND_DELAY);
-        else {
-          $(testButton).removeClass("running");
-        }
-      }
-
-      function nextCommand() {
-        var cmd = cmds.shift();
-        cmd();
-        queueNextCommand();
-      }
+      var auto;
 
       $(testButton).addClass("running");
-      
+      function onDone() {
+        $(testButton).removeClass("running");
+      }
+
       resetDashboard(
         function(method, args) {
           switch (method) {
           case "blackBox.onDashboardLoaded":
             var dashboard = args[0];
             var options = args[1];
-            cmds = testFunc(options.jQuery);
+            auto = new Automator(window, options.jQuery, onDone);
+            testFunc(auto);
             break;
           case "blackBox.afterInit":
-            queueNextCommand();
+            auto.queueNextCommand();
             break;
           }
         });
