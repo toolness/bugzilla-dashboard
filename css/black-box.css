@@ -30,6 +30,14 @@ a {
     cursor: pointer;
 }
 
+.fail {
+    color: red;
+}
+
+.success {
+    color: #00ff00;
+}
+
 .running:after {
     content: " (now running)";
     color: yellow;

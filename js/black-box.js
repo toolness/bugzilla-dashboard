@@ -1,6 +1,7 @@
-function Automator(window, jQuery, onDone) {
+function Automator(window, jQuery, onDone, onFail) {
   this.jQuery = jQuery;
   this.onDone = onDone;
+  this.onFail = onFail;
   this.queue = [];
   this.window = window;
 }
@@ -24,10 +25,10 @@ Automator.prototype = {
     var query = this.jQuery(sel);
 
     if (query.length == 0)
-      throw new Error("selector yields no results: " + sel);
+      this.onFail("selector yields no results: " + sel);
     if (query.length > 1)
-      throw new Error("selector yields " + query.length +
-                      " results instead of 1: " + sel);
+      this.onFail("selector yields " + query.length +
+                  " results instead of 1: " + sel);
 
     return query;
   },
@@ -37,7 +38,7 @@ Automator.prototype = {
         var query = this.jQuery(field + ":visible");
 
         if (query.length == 0)
-          throw new Error("selector not visible: " + field);
+          this.onFail("selector not visible: " + field);
       });
   },
   type: function type(field, value) {
@@ -48,19 +49,19 @@ Automator.prototype = {
   }
 };
 
+function testLoginWithNoPassword(auto) {
+  auto.type("#login .username", "john@doe.com");
+  auto.type("#login .password", "");
+  auto.submit("#login form");
+  auto.verifyVisible("#header .requires-login");
+}
+
 function testLoginWithCorrectPassword(auto) {
   auto.type("#login .username", "john@doe.com");
   auto.type("#login .password", "test");
   auto.submit("#login form");
   auto.verifyVisible("#header .requires-login");
   auto.verifyVisible("#header .requires-auth-login");
-}
-
-function testLoginWithNoPassword(auto) {
-  auto.type("#login .username", "john@doe.com");
-  auto.type("#login .password", "");
-  auto.submit("#login form");
-  auto.verifyVisible("#header .requires-login");
 }
 
 function testLoginWithIncorrectPassword(auto) {
@@ -118,8 +119,19 @@ function initialize() {
       var auto;
 
       $(testButton).addClass("running");
+      function onFail(reason) {
+        $(testButton).addClass("fail");
+        var msg = ("Failure in " + $(testButton).text() + ": " + 
+                   reason);
+        var msgElem = $('<p class="fail"></p>').text(msg);
+        msgElem.hide();
+        $("#messages").append(msgElem);
+        msgElem.slideDown();
+      }
       function onDone() {
         $(testButton).removeClass("running");
+        if (!$(testButton).hasClass("fail"))
+          $(testButton).addClass("success");
       }
 
       resetDashboard(
@@ -128,7 +140,8 @@ function initialize() {
           case "blackBox.onDashboardLoaded":
             var dashboard = args[0];
             var options = args[1];
-            auto = new Automator(window, options.jQuery, onDone);
+            auto = new Automator(window, options.jQuery, onDone,
+                                 onFail);
             testFunc(auto);
             break;
           case "blackBox.afterInit":
