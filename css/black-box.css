@@ -11,14 +11,13 @@ a {
 }
 
 #dashboard-container {
-    float: left;
+    margin-right: 1em;
 }
 
 #dashboard {
     width: 640px;
     height: 480px;
     border: none;
-    margin-right: 1em;
 }
 
 .test-button:before {
