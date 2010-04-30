@@ -22,12 +22,23 @@ Automator.prototype = {
   },
   _$: function _$(sel) {
     var query = this.jQuery(sel);
+
     if (query.length == 0)
       throw new Error("selector yields no results: " + sel);
     if (query.length > 1)
       throw new Error("selector yields " + query.length +
                       " results instead of 1: " + sel);
+
     return query;
+  },
+  verifyVisible: function verifyVisible(field) {
+    this.queue.push(
+      function() {
+        var query = this.jQuery(field + ":visible");
+
+        if (query.length == 0)
+          throw new Error("selector not visible: " + field);
+      });
   },
   type: function type(field, value) {
     this.queue.push(function() { this._$(field).val(value); });
@@ -41,18 +52,22 @@ function testLoginWithCorrectPassword(auto) {
   auto.type("#login .username", "john@doe.com");
   auto.type("#login .password", "test");
   auto.submit("#login form");
+  auto.verifyVisible("#header .requires-login");
+  auto.verifyVisible("#header .requires-auth-login");
 }
 
 function testLoginWithNoPassword(auto) {
   auto.type("#login .username", "john@doe.com");
   auto.type("#login .password", "");
-  auto.submit("#login form");  
+  auto.submit("#login form");
+  auto.verifyVisible("#header .requires-login");
 }
 
 function testLoginWithIncorrectPassword(auto) {
   auto.type("#login .username", "john@doe.com");
   auto.type("#login .password", "u");
   auto.submit("#login form");
+  auto.verifyVisible("#errors .bugzilla-api-error");
 }
 
 function setDashboardLoaded(delegate, window) {
