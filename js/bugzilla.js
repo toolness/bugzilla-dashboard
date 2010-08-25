@@ -15,7 +15,7 @@ var Bugzilla = {
         values = [values];
       values.forEach(
         function(value) {
-          parts.push(encodeURI(name) + "=" + encodeURI(value));
+          parts.push(encodeURIComponent(name) + "=" + encodeURIComponent(value));
         });
     }
     return parts.join("&");
