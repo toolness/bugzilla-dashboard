@@ -647,7 +647,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
-            email1_reporter: 1,
+            email1_creator: 1,
             email2: myUsername,
             email2_type: "not_equals",
             email2_assigned_to: 1});
@@ -660,7 +660,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2: myUsername,
             email2_type: "not_equals",
             email2_assigned_to: 1,
-            email2_reporter: 1});
+            email2_creator: 1});
 
     report("#fixed-bugs", key, forceUpdate,
            {resolution: ["FIXED"],
@@ -668,7 +668,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email1: myUsername,
             email1_type: "equals",
             email1_assigned_to: 1,
-            email1_reporter: 1,
+            email1_creator: 1,
             email1_cc: 1});
   };
 
