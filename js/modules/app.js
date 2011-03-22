@@ -517,7 +517,9 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
 
     function appendRowForBug(bug) {
       var row = rowTemplate.clone();
+      row.attr("href", bugzilla.getShowBugURL(bug.id));
       row.attr("id", "bug-id-" + bug.id);
+      row.attr("target", row.attr("id"));
       row.find(".summary").text(bug.summary);
       row.addClass("status-" + bug.status);
       if (bug.priority != "--") {
@@ -525,24 +527,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
         row.addClass(bug.severity);
       }
       row.find(".last-changed").attr("data-last-change",
-                                     bug.last_change_time);
-
-      row.click(
-        function onClick() {
-          window.open(bugzilla.getShowBugURL(bug.id));
-        });
-
-      row.hover(
-        function onIn() {
-          var tooltip = $("#templates .bug-tooltip").clone();
-          tooltip.find(".priority").text(bug.priority);
-          // TODO: Show more information in tooltip.
-          $(this).append(tooltip);
-        },
-        function onOut() {
-          $(this).find(".bug-tooltip").remove();
-        });
-      
+                                     bug.last_change_time);      
       table.append(row);
     }
 

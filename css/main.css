@@ -91,28 +91,32 @@ table, caption {
     font-variant: inherit;
 }
 
-#reports table {
+#reports div.bugs {
+    display: table;
     width: 100%;
     border-collapse: collapse;
 }
 
-#reports tr {
-    border-bottom: 1px black dotted;
+#reports div.header {
+  font-weight: bold;
 }
 
-#reports th {
-    text-align: left;
+#reports div.header, #reports a.bug-row {
+  display: table-row;
+  border-bottom: 1px black dotted;
 }
 
-#reports tr.bug-row {
-    cursor: pointer;
+#reports div.header div {
+  text-align: left;
 }
 
-#reports tr.bug-row:hover {
+#reports a.bug-row:hover {
     background: #f0f0f0;
 }
 
-#reports th, td {
+#reports div.header div, #reports a.bug-row div {
+    display: table-cell;
+    vertical-align: middle;
     padding: 0.5em;
 }
 
@@ -136,11 +140,6 @@ table, caption {
 
 .countdown {
     color: #f0f0f0;
-}
-
-.bug-tooltip {
-    /* TODO: Actually display this. */
-    display: none;
 }
 
 .loading {
