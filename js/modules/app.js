@@ -647,6 +647,29 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             email2_assigned_to: 1,
             email2_creator: 1});
 
+    report("#awaiting-input", key, forceUpdate,
+           {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+            f1: "setters.login_name",
+            o1: "equals",
+            v1: myUsername,
+            f2: "flagtypes.name",
+            o2: "anywords",
+            v2: "f? r? needinfo?"
+           });
+
+   report("#mentored-bugs", key, forceUpdate,
+           {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+            email1: myUsername,
+            email1_type: "equals",
+            email1_cc: 1,
+            email2: myUsername,
+            email2_type: "not_equals",
+            email2_assigned_to: 1,
+            email2_creator: 1,
+            whiteboard: "[mentor",
+            whiteboard_type: "contains"
+           });
+
     report("#fixed-bugs", key, forceUpdate,
            {resolution: ["FIXED"],
             changed_after: dateUtils.timeAgo(MS_PER_WEEK),
