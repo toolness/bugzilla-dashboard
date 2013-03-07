@@ -44,7 +44,8 @@
   <p>Enter a user's Bugzilla information below. If you don't
   provide a password, you'll only be able to see the user's
   public bugs, and you also won't be able to use some of this
-  page's awesome functionality.</p>
+  page's awesome functionality. If you don't provide a mentor
+  identity, you will not be able to see the user's mentored bugs.</p>
   <p><emph>Security notice</emph> Any password will be
     sent without encryption.</p>
   <table>
@@ -55,6 +56,10 @@
     <tr>
       <td>Bugzilla Password</td>
       <td><input type="password" class="password" id="login-password"/></td>
+    </tr>
+    <tr>
+      <td>Bugzilla Mentoring Nickname</td>
+      <td><input type="text" class="mentorname" id="login-mentorname"/></td>
     </tr>
   </table>
   <br/>

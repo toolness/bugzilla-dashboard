@@ -23,6 +23,7 @@ Require.modules["app/loader"] = function(exports, require) {
 Require.modules["app/login"] = function(exports) {
   var callbacks = [];
   var username;
+  var mentorname;
   var password;
   var passwordProvider;
 
@@ -37,26 +38,39 @@ Require.modules["app/login"] = function(exports) {
   exports.get = function get() {
     var isLoggedIn = (username && username != "");
     var isAuthenticated = (isLoggedIn && password && password != "");
+    var isMentor = (mentorname && mentorname != "");
 
     return {
       username: username,
       password: password,
+      mentorname: mentorname,
       isLoggedIn: isLoggedIn,
-      isAuthenticated: isAuthenticated
+      isAuthenticated: isAuthenticated,
+      isMentor: isMentor
     };
   };
 
-  exports.set = function set(newUsername, newPassword) {
+  exports.setUsername = function setUsername(newUsername) {
+    exports.set(newUsername, password, mentorname);
+  };
+  exports.setMentorname = function setMentorname(newMentorname) {
+    exports.set(username, password, newMentorname);
+  };
+
+  exports.set = function set(newUsername, newPassword, newMentorname) {
     if ((newUsername && newUsername != "") &&
+        (newMentorname && newMentorname != "") &&
         (!newPassword || newPassword == "") &&
         (passwordProvider))
       newPassword = passwordProvider(newUsername);
 
-    if (newUsername == username && newPassword == password)
+    if (newUsername == username && newPassword == password
+        && newMentorname == mentorname)
       return;
 
     username = newUsername;
     password = newPassword;
+    mentorname = newMentorname;
 
     var info = exports.get();
 
@@ -155,7 +169,8 @@ Require.modules["app/ui/login-form"] = function(exports, require) {
     function(event) {
       event.preventDefault();
       require("app/login").set($("#login .username").val(),
-                               $("#login .password").val());
+                               $("#login .password").val(),
+                               $("#login .mentorname").val());
       $("#login").fadeOut();
     });
 
@@ -421,7 +436,15 @@ Require.modules["app/ui"] = function(exports, require) {
 Require.modules["app/ui/hash"] = function(exports, require) {
   function usernameFromHash(location) {
     if (location.hash) {
-      var match = location.hash.match(/#username=(.*)/);
+      var match = location.hash.match(/[#&]username=([^&]*)/);
+      if (match)
+        return unescape(match[1]);
+    }
+    return "";
+  }
+  function mentornameFromHash(location) {
+    if (location.hash) {
+      var match = location.hash.match(/[#&]mentorname=([^&]*)/);
       if (match)
         return unescape(match[1]);
     }
@@ -430,21 +453,29 @@ Require.modules["app/ui/hash"] = function(exports, require) {
 
   function setLoginFromHash(location) {
     var username = usernameFromHash(location);
+    var mentorname = mentornameFromHash(location);
 
     var user = require("app/login").get();
     if (user.username != username)
-      require("app/login").set(username);
+      require("app/login").setUsername(username);
+    if (user.mentorname != mentorname)
+      require("app/login").setMentorname(mentorname);
+
   }
 
-  exports.usernameToHash = function usernameToHash(username) {
-    return "#username=" + escape(username);
+  exports.usernameToHash = function usernameToHash(username, mentorname) {
+    var prefix = "#username=" + escape(username);
+    if (mentorname)
+      return prefix + "&mentorname="+escape(mentorname);
+    else
+      return prefix;
   };
 
   exports.init = function init(document) {
     require("app/login").whenChanged(
       function(user) {
         if (user.isLoggedIn) {
-          var hash = exports.usernameToHash(user.username);
+          var hash = exports.usernameToHash(user.username, user.mentorname);
           if (document.location.hash != hash)
             document.location.hash = hash;
         } else
@@ -613,7 +644,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     changed_after: dateUtils.timeAgo(MS_PER_WEEK * 14)
   };
 
-  function update(myUsername, isAuthenticated, forceUpdate) {
+  function update(myUsername, isAuthenticated, mentorName, forceUpdate) {
     xhrQueue.clear();
 
     var key = myUsername + "_" + (isAuthenticated ? "PRIVATE" : "PUBLIC");
@@ -657,8 +688,15 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             v2: "f? r? needinfo?"
            });
 
-   report("#mentored-bugs", key, forceUpdate,
-           {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+   if (mentorName) {
+     report("#mentored-bugs", key, forceUpdate,
+            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+            whiteboard: "[mentor="+mentorName,
+            whiteboard_type: "contains"
+           });
+   } else {
+     report("#mentored-bugs", key, forceUpdate,
+            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
             email1_type: "equals",
             email1_cc: 1,
@@ -669,6 +707,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             whiteboard: "[mentor",
             whiteboard_type: "contains"
            });
+    }
 
     report("#fixed-bugs", key, forceUpdate,
            {resolution: ["FIXED"],
@@ -685,7 +724,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     execute: function execute() {
       var user = require("app/login").get();
       if (user.isLoggedIn)
-        update(user.username, user.isAuthenticated, true);
+        update(user.username, user.isAuthenticated, user.mentorname, true);
     }
   };
 
@@ -694,7 +733,7 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
     require("app/login").whenChanged(
       function changeSearchCriteria(user) {
         if (user.isLoggedIn) {
-          update(user.username, user.isAuthenticated, false);
+          update(user.username, user.isAuthenticated, user.mentorname, false);
         }
       });
   };
