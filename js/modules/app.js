@@ -611,8 +611,9 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
 
   function report(selector, key, forceUpdate, searchTerms) {
     var newTerms = {__proto__: defaults};
-    for (name in searchTerms)
+    for (var name in searchTerms)
       newTerms[name.replace(/_DOT_/g, ".")] = searchTerms[name];
+    newTerms["include_fields"]="id,priority,severity,summary,status,component,assignee,last_change_time";
 
     var cacheKey = key + "/" + selector;
     var cached = cache.get(cacheKey);
@@ -651,32 +652,35 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
 
     report("#code-reviews", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            flag_DOT_requestee: myUsername});
+            f1: "requestees.login_name",
+            o1: "substring",
+            v1: myUsername});
 
     report("#assigned-bugs", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            email1: myUsername,
-            email1_type: "equals",
-            email1_assigned_to: 1});
+            emailtype1: "exact",
+            emailassigned_to1: 1,
+            email1: myUsername});
 
     report("#reported-bugs", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
-            email1_type: "equals",
-            email1_creator: 1,
+            emailtype1: "exact",
+            emailreporter1: 1,
             email2: myUsername,
-            email2_type: "not_equals",
-            email2_assigned_to: 1});
+            emailtype2: "notequals",
+            emailassigned_to2: 1});
+
 
     report("#cc-bugs", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
             email1: myUsername,
-            email1_type: "equals",
-            email1_cc: 1,
+            emailtype1: "exact",
+            emailcc1: 1,
             email2: myUsername,
-            email2_type: "not_equals",
-            email2_assigned_to: 1,
-            email2_creator: 1});
+            emailtype2: "notequals",
+            emailreporter2: 1,
+            emailassigned_to2: 1});
 
     report("#awaiting-input", key, forceUpdate,
            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
@@ -688,35 +692,22 @@ Require.modules["app/ui/dashboard"] = function(exports, require) {
             v2: "f? r? needinfo?"
            });
 
-   if (mentorName) {
-     report("#mentored-bugs", key, forceUpdate,
-            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            whiteboard: "[mentor="+mentorName,
-            whiteboard_type: "contains"
-           });
-   } else {
-     report("#mentored-bugs", key, forceUpdate,
-            {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
-            email1: myUsername,
-            email1_type: "equals",
-            email1_cc: 1,
-            email2: myUsername,
-            email2_type: "not_equals",
-            email2_assigned_to: 1,
-            email2_creator: 1,
-            whiteboard: "[mentor",
-            whiteboard_type: "contains"
-           });
-    }
+   report("#mentored-bugs", key, forceUpdate,
+          {status: ["NEW", "UNCONFIRMED", "ASSIGNED", "REOPENED"],
+           f1: "bug_mentor",
+           o1: "substring",
+           v1: myUsername,
+         });
 
     report("#fixed-bugs", key, forceUpdate,
            {resolution: ["FIXED"],
             changed_after: dateUtils.timeAgo(MS_PER_WEEK),
             email1: myUsername,
-            email1_type: "equals",
-            email1_assigned_to: 1,
-            email1_creator: 1,
-            email1_cc: 1});
+            emailtype1: "exact",
+            emailbug_mentor1: 1,
+            emailassigned_to1: 1,
+            emailcc1: 1,
+           });
   };
 
   var refreshCommand = {
