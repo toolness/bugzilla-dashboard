@@ -1,5 +1,5 @@
 var Bugzilla = {
-  BASE_URL: "https://api-dev.bugzilla.mozilla.org/latest",
+  BASE_URL: "https://bugzilla.mozilla.org/rest",
   BASE_UI_URL: "https://bugzilla.mozilla.org",
   DEFAULT_OPTIONS: {
     method: "GET"
@@ -27,9 +27,17 @@ var Bugzilla = {
     options = newOptions;
 
     function onLoad() {
-      var response = JSON.parse(xhr.responseText);
-      if (!response.error)
+      try {
+        var response = JSON.parse(xhr.responseText);
+      } catch (SyntaxError) {
+        console.error("Response is not JSON", xhr.responseText);
+        return;
+      }
+      if (!response.error) {
         options.success(response);
+      } else {
+        console.error("Error from Bugzilla", response);
+      }
       // TODO: We should really call some kind of error callback
       // if this didn't work.
     }
@@ -39,6 +47,7 @@ var Bugzilla = {
 
     if (options.data)
       url = url + "?" + this.queryString(options.data);
+
     xhr.open(options.method, url);
     xhr.setRequestHeader("Accept", "application/json");
     xhr.setRequestHeader("Content-Type", "application/json");

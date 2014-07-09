@@ -1,6 +1,7 @@
 <html>
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
   <link rel="stylesheet" type="text/css" media="all"
         href="css/jquery-ui.css" />
   <link rel="stylesheet" type="text/css" media="all"
@@ -29,6 +30,8 @@
 <div id="reports" class="requires-login hide-while-loading">
   <div class="container">
     <div id="code-reviews"><h2>Things To Review</h2></div>
+    <div id="awaiting-input"><h2>Waiting for Input</h2></div>
+    <div id="mentored-bugs"><h2>Mentored Bugs</h2></div>
     <div id="assigned-bugs"><h2>Assigned Bugs</h2></div>
     <div id="reported-bugs"><h2>Reported Bugs</h2></div>
     <div id="cc-bugs"><h2>CC'd Bugs</h2></div>
@@ -41,7 +44,10 @@
   <p>Enter a user's Bugzilla information below. If you don't
   provide a password, you'll only be able to see the user's
   public bugs, and you also won't be able to use some of this
-  page's awesome functionality.</p>
+  page's awesome functionality. If you don't provide a mentor
+  identity, you will not be able to see the user's mentored bugs.</p>
+  <p><emph>Security notice</emph> Any password will be
+    sent without encryption.</p>
   <table>
     <tr>
       <td>Bugzilla Username</td>
@@ -50,6 +56,10 @@
     <tr>
       <td>Bugzilla Password</td>
       <td><input type="password" class="password" id="login-password"/></td>
+    </tr>
+    <tr>
+      <td>Bugzilla Mentoring Nickname</td>
+      <td><input type="text" class="mentorname" id="login-mentorname"/></td>
     </tr>
   </table>
   <br/>
